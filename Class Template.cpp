@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 using namespace std;
+//坑在 模板函数的重载输出操作符必须在类内直接实现
 
 template<typename type1,typename type2>
 class Point
@@ -14,14 +15,18 @@ public:
 	type1 getx() const;
 	type2 gety() const;
 
-	friend ostream& operator<<(ostream& os, const Point<type1,type2> &buf);
+	//emmmmm 模板类的重载输出操作符必须在类内实现
+	//只在类内声明,在类外实现就是不行 (会有链接错误
+	friend ostream& operator<<(ostream& os, const Point<type1, type2> &buf)
+	{
+		os << "坐标是" << buf.getx() << ' ' << buf.gety();
+		return os;
+	}
 };
+
 int main(void)
 {
 	Point<float,const char*> point(120.5f, "东经180度");
-
-	//??????
-	//正常输入没有任何问题,只要调用<<就会链接错误
 	cout << point << endl;
 
 	//模板类的指针要注意:new中的类型要保证和定义的类型一致
@@ -51,9 +56,3 @@ type2 Point<type1,type2>::gety() const
 	return this->_y;
 }
 
-template<typename type1, typename type2>
-ostream & operator<<(ostream & os, const Point<type1, type2>& buf)
-{
-	os << "坐标是" << buf.getx() << ' ' << buf.gety();
-	return os;
-}
