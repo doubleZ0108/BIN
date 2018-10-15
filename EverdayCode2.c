@@ -178,6 +178,70 @@ void InsertSort(const struct NODE *head)
 		front = turn;
 	}
 }
+void SelectSort(const struct NODE *head)
+{
+	struct NODE *turn, *move, *max;
+	struct Student buf;
+
+	for (turn = head->next; turn->next != NULL; turn = turn->next)
+	{
+		max = turn;
+		for (move = turn->next; move != NULL; move = move->next)
+		{
+			if (move->data.num > max->data.num)
+			{
+				max = move;
+			}
+		}
+		if (max != turn)
+		{
+			buf = max->data;
+			max->data = turn->data;
+			turn->data = buf;
+		}
+	}
+}
+void QuickSort(struct NODE *head, struct NODE *tail)
+{
+	struct NODE *key, *front, *back, *move;
+
+	if(head->next==tail || head->next->next==tail)
+	{
+		return;
+	}
+
+	key = head->next;
+	move = key->next;
+	front = key;
+	back = key->next->next;
+
+	while (move != tail)
+	{
+		if (move->data.num < key->data.num)
+		{
+			move->next = head->next;
+			head->next = move;
+			front->next = back;
+
+			if (!back) { break; }
+			move = back;
+			back = back->next;
+		}
+		else
+		{
+			if (!back) { break; }
+			else
+			{
+				move = move->next;
+				front = front->next;
+				back = back->next;
+			}
+		}
+	}
+
+	QuickSort(head, key);
+	QuickSort(key, tail);
+}
 
 int main(void)
 {
@@ -195,6 +259,11 @@ int main(void)
 	OutputLink(head);*/
 	/*InsertSort(head);
 	OutputLink(head);*/
+	/*SelectSort(head);
+	OutputLink(head);*/
+	/*QuickSort(head, NULL);
+	OutputLink(head);*/
+
 
 	DestroyLink(head);
 	system("pause");
