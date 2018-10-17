@@ -181,6 +181,8 @@ void SelectSort(const struct NODE *head)
 		}
 	}
 }
+
+
 void QuickSort(struct NODE *head, struct NODE *tail)
 {
 	struct NODE *key, *move, *front, *back;
@@ -194,32 +196,27 @@ void QuickSort(struct NODE *head, struct NODE *tail)
 
 	while (move != tail)
 	{
-		if (move->data.num < key->data.num)
+		if (move->data.num > key->data.num)
 		{
 			move->next = head->next;
 			head->next = move;
 			front->next = back;
 
 			if (!back) { break; }
-
 			move = back;
 			back = back->next;
 		}
 		else
 		{
 			if (!back) { break; }
-			else
-			{
-				move = move->next;
-				front = front->next;
-				back = back->next;
-			}
+			move = move->next;
+			front = front->next;
+			back = back->next;
 		}
 	}
 
 	QuickSort(head, key);
 	QuickSort(key, tail);
-
 }
 int main(void)
 {
