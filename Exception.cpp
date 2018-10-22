@@ -1,3 +1,8 @@
+/*
+C++异常处理流程
+抛出(throw) -> 检测(try) -> 捕获(catch)
+异常必须显示的抛出, 才能被检测和捕获到; 没有显示的抛出, 即使有异常也检测不到
+*/
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -26,9 +31,9 @@ int main(void)
 		char ch2 = str.at(100);	//at()函数检测到下标越界会抛出一个异常
 		cout << ch2 << endl;
 	}
-	catch (exception &e)
+	catch (exception &e)	//这一用引用提高效率
 	{
-		cout << ".at()out of bound" << endl;
+		cout << e.what() << endl;	//对于标准异常, 可以调用what方法大致掌握错误类型
 	}
 
 	try
@@ -69,7 +74,6 @@ int main(void)
 	{
 		cout << "Exception type: Derived" << endl;
 	}
-
 
 	system("pause");
 	return 0;
