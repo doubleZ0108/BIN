@@ -14,6 +14,10 @@ void func_outer()
 	func_inner();
 	cout << "[2]This statement will not be excuted" << endl;
 }
+
+class Base{};
+class Derived:public Base{};
+
 int main(void)
 {
 	string str = "hello world";
@@ -43,6 +47,30 @@ int main(void)
 	{
 		cout << e << endl;
 	}
+
+	
+	//多级catch
+	//这里匹配的是Base, 向上转型
+	try
+	{
+		throw Derived();	//抛出一个Derived类型的匿名数据
+		cout << "This statement will not be executed" << endl;
+	}
+	catch (int)	//这里只指定类型而不给变量
+		//只会将异常类型和catch所能处理的类型进行匹配,不会传递异常数据
+	{
+		cout << "Exception type: int" << endl;
+	}
+	catch (Base)	//匹配成功, 向上转型
+	{
+		cout << "Exception type: Base" << endl;
+	}
+	catch (Derived)
+	{
+		cout << "Exception type: Derived" << endl;
+	}
+
+
 	system("pause");
 	return 0;
 }
