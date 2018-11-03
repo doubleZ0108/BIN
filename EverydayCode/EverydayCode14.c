@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define FRONT 0
+#define BACK  1
+
 struct STU
 {
 	int num;
@@ -79,16 +82,131 @@ void DestroyLink(struct NODE *head)
 		printf("链表已销毁!\n");
 	}
 }
+
+void InsertLink(const struct NODE *head, int flag)
+{
+	struct NODE *move = (flag == FRONT ? head : head->next);
+
+	int index;
+	printf("你想在第几个结点"); printf(flag == FRONT ? "之前插入: " : "之后插入: ");
+	scanf("%d", &index);
+
+	for (int i = 1; (flag == FRONT ? move->next : move) != NULL; move = move->next, ++i)
+	{
+		if (i == index)
+		{
+			struct NODE *fresh = malloc(sizeof*fresh);
+			if (fresh == NULL)
+			{
+				printf("Memory Alloction Failed!\n");
+				exit(-1);
+			}
+			printf("请输入新结点的信息: ");
+			scanf("%d", &fresh->data.num);
+
+			fresh->next = move->next;
+			move->next = fresh;
+
+			break;
+		}
+	}
+}
+void DeleteLink(const struct NODE *head)
+{
+	if (head->next == NULL)
+	{
+		printf("链表为空!\n");
+		return;
+	}
+	else
+	{
+		struct NODE *move = head;
+
+		int index;
+		printf("你想删除第几个结点: ");
+		scanf("%d", &index);
+
+		for (int i = 1; move->next != NULL; move = move->next, ++i)
+		{
+			if (i == index)
+			{
+				struct NODE *save = move->next;
+				move->next = move->next->next;
+
+				free(save);
+				save = NULL;
+
+				return;
+			}
+		}
+
+		printf("无该结点!\n");
+	}
+}
+
+void BubbleSort(const struct NODE *head)
+{
+	struct NODE *turn, *move;
+	struct NODE *save = NULL;
+	struct STU buf;
+
+	for (turn = head->next; turn->next != NULL; turn = turn->next)
+	{
+		for (move = head->next; move->next != save; move = move->next)
+		{
+			if (move->data.num > move->next->data.num)
+			{
+				buf = move->data;
+				move->data = move->next->data;
+				move->next->data = buf;
+			}
+		}
+		save = move;
+	}
+}
 int main(void)
 {
 	struct NODE *head = CreateLink();
 	InitLink(head);
-	OutputLink(head);
-	/*int OpCode;
+
+	int OpCode;
 	while (1)
 	{
-		printf("请输入你想进行的操作: ");
-	}*/
+		printf("请输入你想进行的操作: 1输出链表 2插入 3删除 \
+4冒泡排序 5选择排序 6插入排序 7快速排序 0结束操作 ");
+			//注意这里printf想用两行写需要在第一行结尾加一个 \, 而且要注意下一行必须顶在最头上写
+		scanf("%d", &OpCode);
+		if (!OpCode) { break; }
+
+		switch (OpCode)
+		{
+		case 1: 
+		{
+			OutputLink(head);
+			break;
+		}
+		case 2:
+		{
+			int flag;
+			printf("你想如何插入: 前插0 后插1 ");
+			scanf("%d", &flag);
+
+			InsertLink(head, flag);
+			break;
+		}
+		case 3:
+		{
+			DeleteLink(head);
+			break;
+		}
+		case 4:
+		{
+			BubbleSort(head);
+			break;
+		}
+		default:printf("请重新输入!\n"); break;
+		}
+	}
 
 	DestroyLink(head);
 	system("pause");
