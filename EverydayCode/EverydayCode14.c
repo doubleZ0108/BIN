@@ -164,6 +164,97 @@ void BubbleSort(const struct NODE *head)
 		save = move;
 	}
 }
+void SelectSort(const struct NODE *head)
+{
+	struct NODE *turn, *move, *max;
+	struct STU buf;
+
+	for (turn = head->next; turn != NULL; turn = turn->next)
+	{
+		max = turn;
+		for (move = turn->next; move != NULL; move = move->next)
+		{
+			if (move->data.num > max->data.num)
+			{
+				max = move;
+			}
+		}
+		if (max != turn)
+		{
+			buf = max->data;
+			max->data = turn->data;
+			turn->data = buf;
+		}
+	}
+}
+void InsertSort(const struct NODE *head)
+{
+	struct NODE *turn, *move;
+	struct NODE *front = head->next, *back = NULL;
+
+	for (turn = head->next->next; turn != NULL; turn = turn->next)
+	{
+		for (move = head; move->next != turn; move = move->next)
+		{
+			if (move->next->data.num > turn->data.num)
+				//大哥啊,别忘了这要判断的,找到了相应的位置才做插入的
+			{
+				back = turn->next;
+
+				turn->next = move->next;
+				move->next = turn;
+
+				front->next = back;
+				turn = front;
+
+				break;
+			}
+		}
+		front = turn;
+	}
+}
+void QuickSort(struct NODE *head, struct NODE *tail)
+{
+	struct NODE *key, *move;
+	struct NODE *front, *back;
+
+	if (head->next == tail || head->next->next == tail) { return; }
+		//forget1: 这里是和tail比较
+
+	key = head->next;
+	move = key->next;
+	front = key;	//forget2: 这里是用key赋值
+	back = key->next->next;
+
+	while (move != tail)
+	{
+		if (move->data.num < key->data.num)
+		{
+			move->next = head->next;
+			head->next = move;
+			front->next = back;
+
+			if (!back) { break; }
+
+			move = back;
+			back = back->next;
+		}
+		else
+		{
+			if (!back) { break; }
+			else
+			{
+				move = move->next;
+				front = front->next;
+				back = back->next;
+			}
+		}
+	}
+
+	QuickSort(head, key);
+	QuickSort(key, tail);
+}
+
 int main(void)
 {
 	struct NODE *head = CreateLink();
@@ -202,6 +293,21 @@ int main(void)
 		case 4:
 		{
 			BubbleSort(head);
+			break;
+		}
+		case 5:
+		{
+			SelectSort(head);
+			break;
+		}
+		case 6:
+		{
+			InsertSort(head);
+			break;
+		}
+		case 7:
+		{
+			QuickSort(head, NULL);
 			break;
 		}
 		default:printf("请重新输入!\n"); break;
