@@ -56,6 +56,79 @@ public:
 	operator double()const { return _x; }
 };
 
+class A
+{
+public:
+	virtual void func()const { cout << "Class A" << endl; }
+private:
+	int m_a;
+};
+class B :public A
+{
+public:
+	virtual void func()const { cout << "Class B" << endl; }
+private:
+	int m_b;
+};
+class C :public B
+{
+public:
+	virtual void func()const { cout << "Class C" << endl; }
+private:
+	int m_c;
+};
+class D :public C
+{
+public:
+	virtual void func()const { cout << "Class D" << endl; }
+private:
+	int m_d;
+};
+void FourCast()
+{
+	/*
+	(1)static_cast
+		1. 原有的自动类型转换, 例如int转double,非const转const,向上转型
+		2. void指针和具体类型指针之间的转换
+		3. 转换构造函数
+
+		不能用于有风险的转换上
+		1. 两个具体类型指针之间的转换, 例如int *和double *间的转换
+		2. 一个任意整数和指针类型之间的转换
+		3. const转non-const
+	*/
+
+	/*
+	(2)const_cast
+		1.将const/volatile 转换为 non-const/non-volatile
+	*/
+	cout << "After const_cast: " << endl;
+	const int n = 100;
+	int *p = const_cast<int*>(&n);
+	*p = 234;
+	cout << "n = " << n << endl;
+	cout << "*p = " << *p << endl;
+	//要注意*p虽然改了,但是n的值还是100, 这是因为C++对常量的处理更像是#define这种值替换过程
+
+	/*
+	(3)reinterpret_cast
+		1. reinterpret是"重新解释"的意思,这种转换仅仅是对二进制位的重新解释
+			非常简单粗暴,所以风险很高,不到万不得已的时候不要用
+	*/
+
+	/*
+	(4)dynamic_cast
+		1. 用于在累得继承层次之间进行类型转换,允许向上转型和向下转型
+		2. 向上转型本来就是很安全的, 所以向上转型是dynamic_cast就相当于static_cast
+		3. 向下转型要借助RTTI的机制进行检测,必须保证安全的前提下才能成功转换
+		4. 只能用于指针类型和引用类型的转换, 其他类型都不行
+			对于指针,如果转换失败将返回NULL; 对于引用,转换失败将抛出bad_cast异常
+	*/
+	A *pa = new A();
+	B *pb;
+	C *pc;
+}
+
 int main(void)
 {
 	Array arr1(10);
@@ -118,6 +191,12 @@ int main(void)
 
 	int bufx = Point(55.5, 66.6);	//先创建了匿名对象,在将Point转换为double, 再将double转换为int
 	cout << "bufx is " << bufx << endl;
+
+
+	/*Test 5: 四种类型转换运算符*/
+	cout << endl << "*****Test 5: 四种类型转换运算符*****" << endl;
+	FourCast();
+
 
 	system("pause");
 	return 0;
