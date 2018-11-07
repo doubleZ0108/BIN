@@ -102,7 +102,7 @@ void FourCast()
 	(2)const_cast
 		1.将const/volatile 转换为 non-const/non-volatile
 	*/
-	cout << "After const_cast: " << endl;
+	cout << endl << "After const_cast: " << endl;
 	const int n = 100;
 	int *p = const_cast<int*>(&n);
 	*p = 234;
@@ -123,10 +123,53 @@ void FourCast()
 		3. 向下转型要借助RTTI的机制进行检测,必须保证安全的前提下才能成功转换
 		4. 只能用于指针类型和引用类型的转换, 其他类型都不行
 			对于指针,如果转换失败将返回NULL; 对于引用,转换失败将抛出bad_cast异常
+		5. dunamic_cast会在程序运行过程中便利继承链,如果途中遇到了要转换的目标类型,
+			那就能够转化成功,所以本质上来说还是只允许向上转型  (至于什么是继承链不深究了)
 	*/
+
+	cout << endl << "After dynamic_cast: " << endl;
 	A *pa = new A();
 	B *pb;
 	C *pc;
+
+	pb = dynamic_cast<B*>(pa);	//向下转型失败
+	if (pb == NULL) {
+		cout << "Dnowcasting failed: A* to B*" << endl;
+	}
+	else {
+		cout << "Downcasting successfully: A* to B*" << endl;
+		pb->func();
+	}
+
+	pc = dynamic_cast<C*>(pa);	//向下转型失败
+	if (pc == NULL) {
+		cout << "Dnowcasting failed: A* to C*" << endl;
+	}
+	else {
+		cout << "Downcasting successfully: A* to C*" << endl;
+		pc->func();
+	}
+
+	cout << "---------------------------------------" << endl;
+
+	pa = new D();		//向上转型都是允许的
+	pb = dynamic_cast<B*>(pa);	//向下转型成功
+	if (pb == NULL) {
+		cout << "Dnowcasting failed: A* to B*" << endl;
+	}
+	else {
+		cout << "Downcasting successfully: A* to B*" << endl;
+		pb->func();
+	}
+
+	pc = dynamic_cast<C*>(pa);	//向下转型成功
+	if (pc == NULL) {
+		cout << "Dnowcasting failed: A* to C*" << endl;
+	}
+	else {
+		cout << "Downcasting successfully: A* to C*" << endl;
+		pc->func();
+	}
 }
 
 int main(void)
