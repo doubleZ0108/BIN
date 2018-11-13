@@ -114,6 +114,23 @@ int main(void)
 	//这是应使用cerr
 	//并且cerr是不经过缓冲区的, 直接向显示器上输出有关信息
 
+
+	/*流成员函数put输出单个字符*/
+	//put成员函数也可以用ostream类的其他流对象调用
+
+	cout << endl << "put: " << endl;
+	cout.put(71).put(79).put(79).put(68).put('\n');
+
+
+	//倒序输出字符串
+	char str[] = "hello";
+	for (int i = 4; i >= 0; --i)
+	{
+		cout.put(*(str + i));
+	}
+	cout.put('\n');
+
+
 	system("pause");
 	return 0;
 }
