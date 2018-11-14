@@ -25,7 +25,24 @@ int BinarySearch(int arr[], int size, int key)
 	}
 	return -1;
 }
+int* BinarySearch_RECURSE(int *low, int *high, int key)
+{
+	if (low > high) { return NULL; }
+	
+	int *mid = low + (high - low) / 2;
+	if (*mid > key) {
+		BinarySearch_RECURSE(low, mid - 1, key);
+	}
+	else if (*mid < key)
+	{
+		BinarySearch_RECURSE(mid + 1, high, key);
+	}
+	else
+	{
+		return mid;
+	}
 
+}
 int main(void)
 {
 	int arr[] = { -34,-12,-9,0,1,5,9,12,14,23,57,98,1235,6578, };
@@ -44,7 +61,16 @@ int main(void)
 		cout << "the position is " << BinarySearch(arr, size, key) << endl;
 	}
 
-	
+	cout << endl << "******************************" << endl;
+	if (BinarySearch_RECURSE(&arr[0], &arr[size - 1], key) == NULL)
+	{
+		cout << "the num " << key << " is not found!" << endl;
+	}
+	else
+	{
+		cout << "the position is " << BinarySearch_RECURSE(&arr[0], &arr[size - 1], key)-arr << endl;
+	}
+
 	system("pause");
 	return 0;
 }
