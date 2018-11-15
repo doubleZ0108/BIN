@@ -109,18 +109,18 @@ void cin_get()
 {
 	cout << endl << "test for get()" << endl;
 	//不带参数的get函数
-	//char ch;
-	//while ((ch = cin.get()) != EOF)
-	//	//以文件结束表示作为判定, 所以最后要出入 Ctrl+Z 才能终止程序
-	//{
-	//	cout.put(ch);
-	//}
+	char ch;
+	while ((ch = cin.get()) != EOF)
+		//以文件结束表示作为判定, 所以最后要出入 Ctrl+Z 才能终止程序
+	{
+		cout.put(ch);
+	}
 
-	////有一个参数的get
-	//while (cin.get(ch))
-	//{
-	//	cout.put(ch);
-	//}
+	//有一个参数的get
+	while (cin.get(ch))
+	{
+		cout.put(ch);
+	}
 
 	//有3个参数的get
 	//cin.get(字符数组, 字符个数n, 终止字符)
@@ -151,7 +151,49 @@ void cin_getline()
 	//由于没指定结束符,所以 / 被当做正常的字符读取
 }
 
+void istream_function()
+{
+	//eof()用于判断是否到达文件末尾, 它不是用来读字符的, 只是判断cin的当前状态
+	//例. 逐个读入字符, 将其中的非空格字符输出
+	//测试用例: C++ is very interesting.回车 Ctrl+Z
 
+	char ch;
+	char arrch[20];
+	while (!cin.eof())
+	{
+		if ((ch = cin.get()) != ' ')
+		{
+			cout.put(ch);
+		}
+	}
+
+	//peek()用于观察后一个字符,但是并不读下一个字符 (用于读输入流的指针不移动)
+	//测试用例: 输入为asd, 但是两个cout读出的值都是a
+	ch = cin.peek();
+	cout << ch;
+	cin >> ch;
+	cout << ch;
+
+	//putback()用于把读取的字符返回到输入流, 插入到当前指针位置
+	//测试用例: asdf回车
+	//第一个输出a, 第二个输出asdf
+	cin >> ch;
+	cout << ch << endl;
+	cin.putback(ch);
+	cin >> arrch;
+	cout << arrch << endl;
+
+	//ignore()
+	//cin.ignore(n,终止字符) 跳过输入流中n个字符,或在遇到指定的终止字符时提前结束
+	//默认的cin.ignore() 相当于 cin.ignore(1,EOF)
+	//测试用例: 12345678910111213
+	//			输出为0111213
+	//测试用例: 1234Asdfg
+	//			输出为sdfg
+	cin.ignore(10, 'A');
+	cin >> arrch;
+	cout << arrch;
+}
 int main(void)
 {
 	/*cout输出流对象*/
@@ -197,6 +239,9 @@ int main(void)
 	//get(3参数) 遇到终止符是立即停止, 终止符仍是输入流的第一个待取字符
 	//cin_getline();
 
+	/*istream类成员函数*/
+	//这些成员函数也可以用istream类的其他流对象调用
+	//istream_function();
 
 	system("pause");
 	return 0;
