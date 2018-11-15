@@ -129,6 +129,28 @@ void cin_get()
 	cin.get(arrch, 10, '\\n');		//注意双斜杠
 	cout << arrch << endl;
 }
+void cin_getline()
+{
+	cout << endl << "test for getline()" << endl;
+	//测试: i like C++./i study C++./i am happy.回车 
+	char arrch[20];
+	cin >> arrch;
+	cout << "1 The string read with cin is: " << arrch << endl;
+	//输出为: i
+	//cin读到空格就结束了
+
+	cin.getline(arrch, 20, '/');
+	cout << "2 The string read with getline(arrch, 20, '/'): " << arrch << endl;
+	//输出为: 空格like C++.
+	//(1)不是从头读,而是接着读
+	//(2)终止符 / 并不放到数组中, 而是丢弃
+
+	cin.getline(arrch, 20);
+	cout << "3 The string read with getline(arrch, 20): " << arrch << endl;
+	//输出为: i study C++./i am h
+	//由于没指定结束符,所以 / 被当做正常的字符读取
+}
+
 
 int main(void)
 {
@@ -166,8 +188,14 @@ int main(void)
 	/*cout_put();*/
 	
 	/*流成员函数get读入单个字符*/
-	//
-	cin_get();
+	//cin_get();
+
+	/*getline()读入一行字符*/
+	//(1)cin<< 合一读取各种类型,甚至是用户重载的自定义类型, 但是cin.getline()只能用于输入字符型数据
+	//注意getline和get的第三种用法的区别: 
+	//getline遇到终止符时把终止符丢掉
+	//get(3参数) 遇到终止符是立即停止, 终止符仍是输入流的第一个待取字符
+	//cin_getline();
 
 
 	system("pause");
