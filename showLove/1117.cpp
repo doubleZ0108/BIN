@@ -1,4 +1,3 @@
-
 #include<stdio.h>
 #include<math.h>
 #include<windows.h>
@@ -10,6 +9,8 @@
 #define N 50
 HANDLE hConsole;
 char lessismore[10] = { 'l','e','s','s','i','s','m','o','r','e' };
+#define stoptimeshort  200
+#define stoptimelong   500
 
 void SetColor(unsigned short ForeColor, unsigned short BackGroundColor)
 {
@@ -189,10 +190,417 @@ void Second_lessismore(void)
 	system("cls");
 }
 
+void Third_article(void)
+{
+	//////////////////
+	char ch[10];
+	int f[9][36] = { 0,1,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,
+		0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
+		0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0
+	};
+	int s[9][21] = { 0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,
+		0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,
+		1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
+		0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,
+		0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,
+		0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,
+		0,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,
+	};
+	int t[9][22] = { 0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,
+		0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,
+		1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,
+		1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,
+		0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,
+		0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,
+		0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,
+		0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,
+		0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,
+	};
+	//////////////////
+	//也许
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "也");
+	Sleep(stoptimeshort);
+	printf("%s", "许\n");
+	////////////////////////////////
+	//你还不知道我 我也不知道你
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "你");
+	Sleep(stoptimeshort);
+	printf("%s", "还");
+	Sleep(stoptimeshort);
+	printf("%s", "不");
+	Sleep(stoptimeshort);
+	printf("%s", "知");
+	Sleep(stoptimeshort);
+	printf("%s", "道");
+	Sleep(stoptimeshort);
+	printf("%s", "我\n");
+	Sleep(stoptimeshort);
+
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+
+	printf("%s", "我");
+	Sleep(stoptimeshort);
+	printf("%s", "也");
+	Sleep(stoptimeshort);
+	printf("%s", "不");
+	Sleep(stoptimeshort);
+	printf("%s", "知");
+	Sleep(stoptimeshort);
+	printf("%s", "到");
+	Sleep(stoptimeshort);
+	printf("%s", "你\n");
+	Sleep(stoptimeshort);
+	///////////////////////////
+	//但是
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "但");
+	Sleep(stoptimeshort);
+	printf("%s", "是\n");
+	///////////////////////////
+	//从我第一次见到你
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "从");
+	Sleep(stoptimeshort);
+	printf("%s", "我");
+	Sleep(stoptimeshort);
+	printf("%s", "第");
+	Sleep(stoptimeshort);
+	printf("%s", "一");
+	Sleep(stoptimeshort);
+	printf("%s", "次");
+	Sleep(stoptimeshort);
+	printf("%s", "见");
+	Sleep(stoptimeshort);
+	printf("%s", "到");
+	Sleep(stoptimeshort);
+	printf("%s", "你\n");
+	/////////////////////////////
+	//就有种说不出的感觉
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "就");
+	Sleep(stoptimeshort);
+	printf("%s", "有");
+	Sleep(stoptimeshort);
+	printf("%s", "种");
+	Sleep(stoptimeshort);
+	printf("%s", "说");
+	Sleep(stoptimeshort);
+	printf("%s", "不");
+	Sleep(stoptimeshort);
+	printf("%s", "出");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "感");
+	Sleep(stoptimeshort);
+	printf("%s", "觉\n");
+	///////////////////////////////
+	//有种似曾相识的熟悉
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "有");
+	Sleep(stoptimeshort);
+	printf("%s", "种");
+	Sleep(stoptimeshort);
+	printf("%s", "似");
+	Sleep(stoptimeshort);
+	printf("%s", "曾");
+	Sleep(stoptimeshort);
+	printf("%s", "相");
+	Sleep(stoptimeshort);
+	printf("%s", "识");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "熟");
+	Sleep(stoptimeshort);
+	printf("%s", "悉\n");
+	///////////////////////////////
+	//于是
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "于");
+	Sleep(stoptimeshort);
+	printf("%s", "是\n");
+	//////////////////////////////
+	//能看到你的每一天都感觉是最有趣的一天
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "能");
+	Sleep(stoptimeshort);
+	printf("%s", "看");
+	Sleep(stoptimeshort);
+	printf("%s", "到");
+	Sleep(stoptimeshort);
+	printf("%s", "你");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "每");
+	Sleep(stoptimeshort);
+	printf("%s", "一");
+	Sleep(stoptimeshort);
+	printf("%s", "天");
+	Sleep(stoptimeshort);
+	printf("%s", "都");
+	Sleep(stoptimeshort);
+	printf("%s", "感");
+	Sleep(stoptimeshort);
+	printf("%s", "觉");
+	Sleep(stoptimeshort);
+	printf("%s", "是");
+	Sleep(stoptimeshort);
+	printf("%s", "最");
+	Sleep(stoptimeshort);
+	printf("%s", "有");
+	Sleep(stoptimeshort);
+	printf("%s", "趣");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "一");
+	Sleep(stoptimeshort);
+	printf("%s", "天\n");
+	///////////////////////////////
+	//于是
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "于");
+	Sleep(stoptimeshort);
+	printf("%s", "是\n");
+	///////////////////////////////
+	//十四号楼
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "十");
+	Sleep(stoptimeshort);
+	printf("%s", "四");
+	Sleep(stoptimeshort);
+	printf("%s", "号");
+	Sleep(stoptimeshort);
+	printf("%s", "楼\n");
+	///////////////////////////////
+	//图书馆九楼
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "图");
+	Sleep(stoptimeshort);
+	printf("%s", "书");
+	Sleep(stoptimeshort);
+	printf("%s", "馆");
+	Sleep(stoptimeshort);
+	printf("%s", "九");
+	Sleep(stoptimeshort);
+	printf("%s", "楼\n");
+	///////////////////////////////
+	//周三广楼的雨伞
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "周");
+	Sleep(stoptimeshort);
+	printf("%s", "三");
+	Sleep(stoptimeshort);
+	printf("%s", "广");
+	Sleep(stoptimeshort);
+	printf("%s", "楼");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "雨");
+	Sleep(stoptimeshort);
+	printf("%s", "伞\n");
+	///////////////////////////////
+	//周三下午A207
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "周");
+	Sleep(stoptimeshort);
+	printf("%s", "三");
+	Sleep(stoptimeshort);
+	printf("%s", "下");
+	Sleep(stoptimeshort);
+	printf("%s", "午");
+	Sleep(stoptimeshort);
+	printf("%s", "A207\n");
+	///////////////////////////////
+	//我们每天都在遇见
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "我");
+	Sleep(stoptimeshort);
+	printf("%s", "们");
+	Sleep(stoptimeshort);
+	printf("%s", "每");
+	Sleep(stoptimeshort);
+	printf("%s", "天");
+	Sleep(stoptimeshort);
+	printf("%s", "都");
+	Sleep(stoptimeshort);
+	printf("%s", "在");
+	Sleep(stoptimeshort);
+	printf("%s", "遇");
+	Sleep(stoptimeshort);
+	printf("%s", "见\n");
+	///////////////////////////////
+	//只是
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "只");
+	Sleep(stoptimeshort);
+	printf("%s", "是\n");
+	///////////////////////////////
+	//老天让你等
+	printf("\n");
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "老");
+	Sleep(stoptimeshort);
+	printf("%s", "天");
+	Sleep(stoptimeshort);
+	printf("%s", "让");
+	Sleep(stoptimeshort);
+	printf("%s", "你");
+	Sleep(stoptimeshort);
+	printf("%s", "等\n");
+	///////////////////////////////
+	//是为了让你等到对的那个人
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "是");
+	Sleep(stoptimeshort);
+	printf("%s", "为");
+	Sleep(stoptimeshort);
+	printf("%s", "了");
+	Sleep(stoptimeshort);
+	printf("%s", "让");
+	Sleep(stoptimeshort);
+	printf("%s", "你");
+	Sleep(stoptimeshort);
+	printf("%s", "等");
+	Sleep(stoptimeshort);
+	printf("%s", "到");
+	Sleep(stoptimeshort);
+	printf("%s", "对");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "那");
+	Sleep(stoptimeshort);
+	printf("%s", "个");
+	Sleep(stoptimeshort);
+	printf("%s", "人\n");
+	///////////////////////////////
+	//于小姐
+	printf("\n");
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "于");
+	Sleep(stoptimeshort);
+	printf("%s", "小");
+	Sleep(stoptimeshort);
+	printf("%s", "姐\n");
+	///////////////////////////////
+	//别等了
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "别");
+	Sleep(stoptimeshort);
+	printf("%s", "等");
+	Sleep(stoptimeshort);
+	printf("%s", "了\n");
+	///////////////////////////////
+	//less is more
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "l");
+	Sleep(stoptimeshort);
+	printf("%s", "e");
+	Sleep(stoptimeshort);
+	printf("%s", "s");
+	Sleep(stoptimeshort);
+	printf("%s", "s\x20");
+	Sleep(stoptimeshort);
+	printf("%s", "i");
+	Sleep(stoptimeshort);
+	printf("%s", "s\x20");
+	Sleep(stoptimeshort);
+	printf("%s", "m");
+	Sleep(stoptimeshort);
+	printf("%s", "o");
+	Sleep(stoptimeshort);
+	printf("%s", "r");
+	Sleep(stoptimeshort);
+	printf("%s", "e\n");
+	///////////////////////////////
+	//未来你会遇到许多有趣的人和事
+	printf("\n");
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "未");
+	Sleep(stoptimeshort);
+	printf("%s", "来");
+	Sleep(stoptimeshort);
+	printf("%s", "你");
+	Sleep(stoptimeshort);
+	printf("%s", "会");
+	Sleep(stoptimeshort);
+	printf("%s", "遇");
+	Sleep(stoptimeshort);
+	printf("%s", "到");
+	Sleep(stoptimeshort);
+	printf("%s", "许");
+	Sleep(stoptimeshort);
+	printf("%s", "多");
+	Sleep(stoptimeshort);
+	printf("%s", "有");
+	Sleep(stoptimeshort);
+	printf("%s", "趣");
+	Sleep(stoptimeshort);
+	printf("%s", "的");
+	Sleep(stoptimeshort);
+	printf("%s", "人");
+	Sleep(stoptimeshort);
+	printf("%s", "和");
+	Sleep(stoptimeshort);
+	printf("%s", "事\n");
+	///////////////////////////////
+	//今天也是
+	printf("%s", "        ");
+	Sleep(stoptimelong);
+	printf("%s", "今");
+	Sleep(stoptimeshort);
+	printf("%s", "天");
+	Sleep(stoptimeshort);
+	printf("%s", "也");
+	Sleep(stoptimeshort);
+	printf("%s", "是\n");
+	Sleep(stoptimelong);
+}
+
 int main(void)
 {
+	system("title less_is_more@163.com");
+
 	First_LineByLine();
 	Second_lessismore();
+	Third_article();
+
 
 	system("pause");
 	return 0;
