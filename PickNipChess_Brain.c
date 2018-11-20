@@ -25,6 +25,36 @@ typedef int bool;
 #define DOWN_LEFT 6
 #define DOWN_RIGHT 7
 
+#define RET_EAT      1
+#define RET_WALKNUM  2
+#define RET_COHESION 1
+#define RET_POSVALUE 1
+
+
+#define YY 0
+#define AA 10
+#define BB 5
+#define CC 1
+#define DD -1
+int POSVALUE[ROW][COL] =
+{
+	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
+	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
+	YY,YY,AA,AA,AA,BB,BB,CC,CC,BB,BB,AA,AA,AA,YY,YY,
+	YY,YY,AA,AA,BB,BB,CC,CC,CC,CC,BB,BB,AA,AA,YY,YY,
+	YY,YY,AA,BB,BB,CC,CC,DD,DD,CC,CC,BB,BB,AA,YY,YY,
+	YY,YY,BB,BB,CC,CC,DD,DD,DD,DD,CC,CC,BB,BB,YY,YY,
+	YY,YY,BB,CC,CC,DD,DD,DD,DD,DD,DD,CC,CC,BB,YY,YY,
+	YY,YY,CC,CC,DD,DD,DD,DD,DD,DD,DD,DD,CC,CC,YY,YY,
+	YY,YY,CC,CC,DD,DD,DD,DD,DD,DD,DD,DD,CC,CC,YY,YY,
+	YY,YY,BB,CC,CC,DD,DD,DD,DD,DD,DD,CC,CC,BB,YY,YY,
+	YY,YY,BB,BB,CC,CC,DD,DD,DD,DD,CC,CC,BB,BB,YY,YY,
+	YY,YY,AA,BB,BB,CC,CC,DD,DD,CC,CC,BB,BB,AA,YY,YY,
+	YY,YY,AA,AA,BB,BB,CC,CC,CC,CC,BB,BB,AA,AA,YY,YY,
+	YY,YY,AA,AA,AA,BB,BB,CC,CC,BB,BB,AA,AA,AA,YY,YY,
+	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
+	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
+};
 ///////////////////////////////////////////
 /*链表操作*/
 typedef struct Chess Chess;
@@ -32,10 +62,18 @@ typedef struct LinkList LinkList;
 
 struct Chess
 {
-	int x;
+	int x;					//当前步的信息
 	int y;
 	int option;
-	int pick_num, nip_num;
+	int pick_num, nip_num;	//走当前步可以挑吃和夹持的数量
+
+	int Ywalk_next;			//对方下局的行动力
+
+	int Mcohesion_next;			//我方的凝聚力
+	int Ycohesion_next;			//对方的凝聚力
+
+	int Mmapvalue_next;				//棋盘位置值
+	int Ymapvalue_next;
 };
 struct NODE
 {
@@ -77,14 +115,27 @@ void Push_back(LinkList *list, Chess *buf)
 void FindMaxValue(LinkList *list, Chess *save)
 {
 	struct NODE *move = list->head->next;
-	int maxvalue = 0;
-	Chess buf;
+	int maxvalue =
+		(move->data.nip_num + move->data.pick_num)*RET_EAT
+		- move->data.Ywalk_next*RET_WALKNUM
+		+ move->data.Mcohesion_next*RET_COHESION
+		- move->data.Ycohesion_next*RET_COHESION
+		+ move->data.Mmapvalue_next*RET_POSVALUE
+		- move->data.Ymapvalue_next*RET_POSVALUE;
 
-	for (; move != NULL; move = move->next)
+	Chess buf = move->data;
+
+	
+	for (move=move->next; move != NULL; move = move->next)
 	{
-		if (move->data.nip_num + move->data.pick_num >= maxvalue)
+		if (move->data.Ywalk_next < maxvalue)
 		{
-			maxvalue = move->data.nip_num + move->data.pick_num;
+			maxvalue = 
+				(move->data.nip_num + move->data.pick_num)*RET_EAT
+				- move->data.Ywalk_next*RET_WALKNUM
+				+ move->data.Mcohesion_next*RET_COHESION
+				- move->data.Ycohesion_next*RET_COHESION;
+
 			buf = move->data;
 		}
 	}
@@ -116,8 +167,7 @@ void showMap(int Map[][COL])
 
 	printf("****************************************\n");
 }
-/*移动某方棋子*/
-//不做任何检测
+/*移动某方棋子*/		//不做任何检测
 void setMap(int color, int x, int y, int option, int Map[][COL])
 {
 	switch (option)
@@ -247,6 +297,397 @@ bool canWalk(int x, int y, int option, int Map[][COL])
 	default:return false; break;
 	}
 }
+/*挑吃*/
+int PickChess(int Ycolor, int x, int y, int option, int Map[][COL])
+{
+	int cnt = 0;
+
+	switch (option)
+	{
+	case UP:
+	{
+		if (Map[x - 1][y - 1] == Ycolor && Map[x - 1][y + 1] == Ycolor) {
+			Map[x - 1][y - 1] = Map[x - 1][y + 1] == 3 - Ycolor;
+		}
+		if (Map[x - 2][y - 1] == Ycolor && Map[x][y + 1] == Ycolor) {
+			Map[x - 2][y - 1] = Map[x][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x][y - 1] == Ycolor && Map[x - 2][y + 1] == Ycolor) {
+			Map[x][y - 1] = Map[x - 2][y + 1] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case DOWN:
+	{
+		if (Map[x + 1][y - 1] == Ycolor && Map[x + 1][y + 1] == Ycolor) {
+			Map[x + 1][y - 1] = Map[x + 1][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x][y - 1] == Ycolor && Map[x + 2][y + 1] == Ycolor) {
+			Map[x][y - 1] = Map[x + 2][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y - 1] == Ycolor && Map[x][y + 1] == Ycolor) {
+			Map[x + 2][y - 1] = Map[x][y + 1] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case LEFT:
+	{
+		if (Map[x - 1][y - 1] == Ycolor && Map[x + 1][y - 1] == Ycolor) {
+			Map[x - 1][y - 1] = Map[x + 1][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y - 2] == Ycolor && Map[x + 1][y] == Ycolor) {
+			Map[x - 1][y - 2] = Map[x + 1][y] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y - 2] == Ycolor && Map[x - 1][y] == Ycolor) {
+			Map[x + 1][y - 2] = Map[x - 1][y] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case RIGHT:
+	{
+		if (Map[x - 1][y + 1] == Ycolor && Map[x + 1][y + 1] == Ycolor) {
+			Map[x - 1][y + 1] = Map[x + 1][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y] == Ycolor && Map[x + 1][y + 2] == Ycolor) {
+			Map[x - 1][y] = Map[x + 1][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y] == Ycolor && Map[x - 1][y + 2] == Ycolor) {
+			Map[x + 1][y] = Map[x - 1][y + 2] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case UP_LEFT:
+	{
+		if (Map[x - 2][y - 1] == Ycolor && Map[x][y - 1] == Ycolor) {
+			Map[x - 2][y - 1] = Map[x][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y - 2] == Ycolor && Map[x - 1][y] == Ycolor) {
+			Map[x - 1][y - 2] = Map[x - 1][y] = 3 - Ycolor;
+		}
+		if (Map[x][y - 2] == Ycolor && Map[x - 2][y] == Ycolor) {
+			Map[x][y - 2] = Map[x - 2][y] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case UP_RIGHT:
+	{
+		if (Map[x - 2][y + 1] == Ycolor && Map[x][y + 1] == Ycolor) {
+			Map[x - 2][y + 1] = Map[x][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y] == Ycolor && Map[x][y + 2] == Ycolor) {
+			Map[x - 2][y] = Map[x][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y] == Ycolor && Map[x - 1][y + 2] == Ycolor) {
+			Map[x - 1][y] = Map[x - 1][y + 2] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case DOWN_LEFT:
+	{
+		if (Map[x][y - 1] == Ycolor && Map[x + 2][y - 1] == Ycolor) {
+			Map[x][y - 1] = Map[x + 2][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y - 2] == Ycolor && Map[x + 1][y] == Ycolor) {
+			Map[x + 1][y - 2] = Map[x + 1][y] = 3 - Ycolor;
+		}
+		if (Map[x][y - 2] == Ycolor && Map[x + 2][y] == Ycolor) {
+			Map[x][y - 2] = Map[x + 2][y] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case DOWN_RIGHT:
+	{
+		if (Map[x][y + 1] == Ycolor && Map[x + 2][y + 1] == Ycolor) {
+			Map[x][y + 1] = Map[x + 2][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y] == Ycolor && Map[x + 1][y + 2] == Ycolor) {
+			Map[x + 1][y] = Map[x + 1][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y] == Ycolor && Map[x][y + 2] == Ycolor) {
+			Map[x + 2][y] = Map[x][y + 2] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	default:break;
+	}
+
+	return cnt;
+}
+/*夹吃*/
+int NipChess(int Ycolor, int x, int y, int option, int Map[][COL])
+{
+	int cnt = 0;
+	switch (option)
+	{
+	case UP:
+	{
+		if (Map[x - 2][y - 1] == Ycolor && Map[x - 3][y - 2] == 3 - Ycolor) {
+			Map[x - 2][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y] == Ycolor && Map[x - 3][y] == 3 - Ycolor) {
+			Map[x - 2][y] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y + 1] == Ycolor && Map[x - 3][y + 2] == 3 - Ycolor) {
+			Map[x - 2][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) {
+			Map[x - 1][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x][y - 1] == Ycolor && Map[x + 1][y - 2] == 3 - Ycolor) {
+			Map[x][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x][y + 1] == Ycolor && Map[x + 1][y + 2] == 3 - Ycolor) {
+			Map[x][y + 1] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case DOWN:
+	{
+		if (Map[x][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) {
+			Map[x][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x][y + 1] == Ycolor && Map[x - 1][y + 2] == 3 - Ycolor) {
+			Map[x][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) {
+			Map[x + 1][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y + 1] == Ycolor && Map[x + 1][y + 2] == 3 - Ycolor) {
+			Map[x + 1][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y - 1] == Ycolor && Map[x + 3][y - 2] == 3 - Ycolor) {
+			Map[x + 2][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y] == Ycolor && Map[x + 3][y] == 3 - Ycolor) {
+			Map[x + 2][y] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y + 1] == Ycolor && Map[x + 3][y + 2] == 3 - Ycolor) {
+			Map[x + 2][y + 1] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case LEFT:
+	{
+		if (Map[x - 1][y - 2] == Ycolor && Map[x - 2][y - 3] == 3 - Ycolor) {
+			Map[x - 1][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y - 1] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) {
+			Map[x - 1][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y] == Ycolor && Map[x - 2][y + 1] == 3 - Ycolor) {
+			Map[x - 1][y] = 3 - Ycolor;
+		}
+		if (Map[x][y - 2] == Ycolor && Map[x][y - 3] == 3 - Ycolor) {
+			Map[x][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y - 2] == Ycolor && Map[x + 2][y - 3] == 3 - Ycolor) {
+			Map[x + 1][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y - 1] == Ycolor && Map[x + 2][y - 1] == 3 - Ycolor) {
+			Map[x + 1][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y] == Ycolor && Map[x + 2][y + 1] == 3 - Ycolor) {
+			Map[x + 1][y] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case RIGHT:
+	{
+		if (Map[x - 1][y] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) {
+			Map[x - 1][y] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y + 1] == Ycolor && Map[x - 2][y + 1] == 3 - Ycolor) {
+			Map[x - 1][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y + 2] == Ycolor && Map[x - 2][y + 3] == 3 - Ycolor) {
+			Map[x - 1][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x][y + 2] == Ycolor && Map[x][y + 3] == 3 - Ycolor) {
+			Map[x][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) {
+			Map[x + 1][y] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y + 1] == Ycolor && Map[x + 2][y + 1] == 3 - Ycolor) {
+			Map[x + 1][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y + 2] == Ycolor && Map[x + 2][y + 3] == 3 - Ycolor) {
+			Map[x + 1][y + 2] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case UP_LEFT:
+	{
+		if (Map[x - 2][y - 2] == Ycolor && Map[x - 3][y - 3] == 3 - Ycolor) {
+			Map[x - 2][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y - 1] == Ycolor && Map[x - 3][y - 1] == 3 - Ycolor) {
+			Map[x - 2][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y] == Ycolor && Map[x - 3][y + 1] == 3 - Ycolor) {
+			Map[x - 2][y] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y - 2] == Ycolor && Map[x - 1][y - 3] == 3 - Ycolor) {
+			Map[x - 1][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y] == Ycolor && Map[x - 1][y + 1] == 3 - Ycolor) {
+			Map[x - 1][y] = 3 - Ycolor;
+		}
+		if (Map[x][y - 2] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
+			Map[x][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x][y - 1] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
+			Map[x][y - 1] = 3 - Ycolor;
+		}
+		break;
+	}
+	case UP_RIGHT:
+	{
+		if (Map[x - 2][y] == Ycolor && Map[x - 3][y - 1] == 3 - Ycolor) {
+			Map[x - 2][y] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y + 1] == Ycolor && Map[x - 3][y + 1] == 3 - Ycolor) {
+			Map[x - 2][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x - 2][y + 2] == Ycolor && Map[x - 3][y + 3] == 3 - Ycolor) {
+			Map[x - 2][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y] == Ycolor && Map[x - 1][y - 1] == 3 - Ycolor) {
+			Map[x - 1][y] = 3 - Ycolor;
+		}
+		if (Map[x - 1][y + 2] == Ycolor && Map[x - 1][y + 3] == 3 - Ycolor) {
+			Map[x - 1][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x][y + 1] == Ycolor && Map[x + 1][y + 1] == 3 - Ycolor) {
+			Map[x][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x][y + 2] == Ycolor && Map[x + 1][y + 3] == 3 - Ycolor) {
+			Map[x][y + 2] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case DOWN_LEFT:
+	{
+		if (Map[x][y - 2] == Ycolor && Map[x - 1][y - 3] == 3 - Ycolor) {
+			Map[x][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x][y - 1] == Ycolor && Map[x - 1][y - 1] == 3 - Ycolor) {
+			Map[x][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y - 2] == Ycolor && Map[x + 1][y - 3] == 3 - Ycolor) {
+			Map[x + 1][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y] == Ycolor && Map[x + 1][y + 1] == 3 - Ycolor) {
+			Map[x + 1][y] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y - 2] == Ycolor && Map[x + 3][y - 3] == 3 - Ycolor) {
+			Map[x + 2][y - 2] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y - 1] == Ycolor && Map[x + 3][y - 1] == 3 - Ycolor) {
+			Map[x + 2][y - 1] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y] == Ycolor && Map[x + 3][y + 1] == 3 - Ycolor) {
+			Map[x + 2][y] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	case DOWN_RIGHT:
+	{
+		if (Map[x][y + 1] == Ycolor && Map[x - 1][y + 1] == 3 - Ycolor) {
+			Map[x][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x][y + 2] == Ycolor && Map[x - 1][y + 3] == 3 - Ycolor) {
+			Map[x][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
+			Map[x + 1][y] = 3 - Ycolor;
+		}
+		if (Map[x + 1][y + 2] == Ycolor && Map[x + 1][y + 3] == 3 - Ycolor) {
+			Map[x + 1][y + 2] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y] == Ycolor && Map[x + 3][y - 1] == 3 - Ycolor) {
+			Map[x + 2][y] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y + 1] == Ycolor && Map[x + 3][y + 1] == 3 - Ycolor) {
+			Map[x + 2][y + 1] = 3 - Ycolor;
+		}
+		if (Map[x + 2][y + 2] == Ycolor && Map[x + 3][y + 3] == 3 - Ycolor) {
+			Map[x + 2][y + 2] = 3 - Ycolor;
+		}
+
+		break;
+	}
+	default:break;
+	}
+	return cnt;
+}
+
+/*我走子之后调整棋盘*/
+void ChangeMap(int Mcolor, int x, int y, int option, int Map[][COL])
+{
+	PickChess(3 - Mcolor, x, y, option, Map);
+	NipChess(3 - Mcolor, x, y, option, Map);
+}
+
+/*color方的凝聚力*/
+int Cohesion(int color, int Map[][COL])
+{
+	int cohesion = 0;
+	for (int i = 2; i < 14; ++i)
+	{
+		for (int j = 2; j < 14; ++j)
+		{
+			if (Map[i][j] == color)
+			{
+				for (int a = -1; a < 2; ++a)
+				{
+					for (int b = -1; b < 2; ++b)
+					{
+						if (Map[i + 1][j + b] == color)
+						{
+							cohesion++;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return cohesion;
+}
+/*color方的棋盘值*/
+int MapValue(int color, int Map[][COL])
+{
+	int mapvalue = 0;
+	for (int i = 2; i < 14; ++i)
+	{
+		for (int j = 2; j < 14; ++j)
+		{
+			if (Map[i][j] == color)
+			{
+				mapvalue++;
+			}
+		}
+	}
+
+	return mapvalue;
+}
+
+
 /*这样的走子 挑吃个数*/
 int PickNum(int Ycolor, int x, int y, int option, int Map[][COL])
 {
@@ -427,352 +868,59 @@ int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 	}
 	return cnt;
 }
-
-/*挑吃*/
-void PickChess(int Ycolor, int x, int y, int option, int Map[][COL])
+/*这样的走子 对方下局的行动力*/
+int YcanWalkNext(int Ycolor, int x, int y, int option, int Map[][COL])
 {
-	int cnt = 0;
+	int copyMap[ROW][COL] = { 0 };
+	memcpy(copyMap, Map, sizeof(Map));
+	ChangeMap(3 - Ycolor, x, y, option, copyMap);
 
-	switch (option)
-	{
-	case UP:
-	{
-		if (Map[x - 1][y - 1] == Ycolor && Map[x - 1][y + 1] == Ycolor) { 
-			Map[x - 1][y - 1] = Map[x - 1][y + 1] == 3 - Ycolor;
-		}
-		if (Map[x - 2][y - 1] == Ycolor && Map[x][y + 1] == Ycolor) { 
-			Map[x - 2][y - 1] = Map[x][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x][y - 1] == Ycolor && Map[x - 2][y + 1] == Ycolor) { 
-			Map[x][y - 1] = Map[x - 2][y + 1] = 3 - Ycolor;
-		}
+	int walk_num = 0;
 
-		break;
-	}
-	case DOWN:
+	for (int i = 2; i < 14; ++i)
 	{
-		if (Map[x + 1][y - 1] == Ycolor && Map[x + 1][y + 1] == Ycolor) { 
-			Map[x + 1][y - 1] = Map[x + 1][y + 1] = 3 - Ycolor;
+		for (int j = 2; j < 14; ++j)
+		{
+			if (copyMap[i][j] == Ycolor)
+			{
+				for (int op = UP; op <= DOWN_RIGHT; ++op)
+				{
+					if (canWalk(i, j, op, copyMap))
+					{
+						walk_num++;
+					}
+				}
+			}
 		}
-		if (Map[x][y - 1] == Ycolor && Map[x + 2][y + 1] == Ycolor) { 
-			Map[x][y - 1] = Map[x + 2][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y - 1] == Ycolor && Map[x][y + 1] == Ycolor) { 
-			Map[x + 2][y - 1] = Map[x][y + 1] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case LEFT:
-	{
-		if (Map[x - 1][y - 1] == Ycolor && Map[x + 1][y - 1] == Ycolor) { 
-			Map[x - 1][y - 1] = Map[x + 1][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y - 2] == Ycolor && Map[x + 1][y] == Ycolor) { 
-			Map[x - 1][y - 2] = Map[x + 1][y] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y - 2] == Ycolor && Map[x - 1][y] == Ycolor) { 
-			Map[x + 1][y - 2] = Map[x - 1][y] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case RIGHT:
-	{
-		if (Map[x - 1][y + 1] == Ycolor && Map[x + 1][y + 1] == Ycolor) { 
-			Map[x - 1][y + 1] = Map[x + 1][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y] == Ycolor && Map[x + 1][y + 2] == Ycolor) { 
-			Map[x - 1][y] = Map[x + 1][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y] == Ycolor && Map[x - 1][y + 2] == Ycolor) { 
-			Map[x + 1][y] = Map[x - 1][y + 2] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case UP_LEFT:
-	{
-		if (Map[x - 2][y - 1] == Ycolor && Map[x][y - 1] == Ycolor) { 
-			Map[x - 2][y - 1] = Map[x][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y - 2] == Ycolor && Map[x - 1][y] == Ycolor) { 
-			Map[x - 1][y - 2] = Map[x - 1][y] = 3 - Ycolor;
-		}
-		if (Map[x][y - 2] == Ycolor && Map[x - 2][y] == Ycolor) { 
-			Map[x][y - 2] = Map[x - 2][y] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case UP_RIGHT:
-	{
-		if (Map[x - 2][y + 1] == Ycolor && Map[x][y + 1] == Ycolor) { 
-			Map[x - 2][y + 1] = Map[x][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y] == Ycolor && Map[x][y + 2] == Ycolor) { 
-			Map[x - 2][y] = Map[x][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y] == Ycolor && Map[x - 1][y + 2] == Ycolor) { 
-			Map[x - 1][y] = Map[x - 1][y + 2] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case DOWN_LEFT:
-	{
-		if (Map[x][y - 1] == Ycolor && Map[x + 2][y - 1] == Ycolor) { 
-			Map[x][y - 1] = Map[x + 2][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y - 2] == Ycolor && Map[x + 1][y] == Ycolor) { 
-			Map[x + 1][y - 2] = Map[x + 1][y] = 3 - Ycolor;
-		}
-		if (Map[x][y - 2] == Ycolor && Map[x + 2][y] == Ycolor) { 
-			Map[x][y - 2] = Map[x + 2][y] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case DOWN_RIGHT:
-	{
-		if (Map[x][y + 1] == Ycolor && Map[x + 2][y + 1] == Ycolor) { 
-			Map[x][y + 1] = Map[x + 2][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y] == Ycolor && Map[x + 1][y + 2] == Ycolor) { 
-			Map[x + 1][y] = Map[x + 1][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y] == Ycolor && Map[x][y + 2] == Ycolor) { 
-			Map[x + 2][y] = Map[x][y + 2] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	default:break;
 	}
 
-	return cnt;
+	return walk_num;
 }
-/*夹吃*/
-void NipChess(int Ycolor, int x, int y, int option, int Map[][COL])
+/*这样的走子 我方和对方下局的凝聚力*/
+void cohesionNext(int Mcolor, int x, int y, int option, int Map[][COL],
+	int *Mcohesion,int *Ycohesion)
 {
-	int cnt = 0;
-	switch (option)
-	{
-	case UP:
-	{
-		if (Map[x - 2][y - 1] == Ycolor && Map[x - 3][y - 2] == 3 - Ycolor) { 
-			Map[x - 2][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y] == Ycolor && Map[x - 3][y] == 3 - Ycolor) { 
-			Map[x - 2][y] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y + 1] == Ycolor && Map[x - 3][y + 2] == 3 - Ycolor) { 
-			Map[x - 2][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) { 
-			Map[x - 1][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x][y - 1] == Ycolor && Map[x + 1][y - 2] == 3 - Ycolor) { 
-			Map[x][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x][y + 1] == Ycolor && Map[x + 1][y + 2] == 3 - Ycolor) { 
-			Map[x][y + 1] = 3 - Ycolor;
-		}
+	int copyMap[ROW][COL] = { 0 };
+	memcpy(copyMap, Map, sizeof(Map));
+	ChangeMap(Mcolor, x, y, option, copyMap);
 
-		break;
-	}
-	case DOWN:
-	{
-		if (Map[x][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) { 
-			Map[x][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x][y + 1] == Ycolor && Map[x - 1][y + 2] == 3 - Ycolor) { 
-			Map[x][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) { 
-			Map[x + 1][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y + 1] == Ycolor && Map[x + 1][y + 2] == 3 - Ycolor) { 
-			Map[x + 1][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y - 1] == Ycolor && Map[x + 3][y - 2] == 3 - Ycolor) { 
-			Map[x + 2][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y] == Ycolor && Map[x + 3][y] == 3 - Ycolor) { 
-			Map[x + 2][y] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y + 1] == Ycolor && Map[x + 3][y + 2] == 3 - Ycolor) { 
-			Map[x + 2][y + 1] = 3 - Ycolor;
-		}
+	*Mcohesion = Cohesion(Mcolor, copyMap);
+	*Ycohesion = Cohesion(3 - Mcolor, copyMap);
+}
+/*这样的走子 我方和对方下局的棋盘值*/
+void mapvalueNext(int Mcolor, int x, int y, int option, int Map[][COL],
+	int *Mmapvalue_next, int *Ymapvalue_next)
+{
+	int copyMap[ROW][COL] = { 0 };
+	memcpy(copyMap, Map, sizeof(Map));
+	ChangeMap(Mcolor, x, y, option, copyMap);
 
-		break;
-	}
-	case LEFT:
-	{
-		if (Map[x - 1][y - 2] == Ycolor && Map[x - 2][y - 3] == 3 - Ycolor) { 
-			Map[x - 1][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y - 1] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) { 
-			Map[x - 1][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y] == Ycolor && Map[x - 2][y + 1] == 3 - Ycolor) { 
-			Map[x - 1][y] = 3 - Ycolor;
-		}
-		if (Map[x][y - 2] == Ycolor && Map[x][y - 3] == 3 - Ycolor) { 
-			Map[x][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y - 2] == Ycolor && Map[x + 2][y - 3] == 3 - Ycolor) { 
-			Map[x + 1][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y - 1] == Ycolor && Map[x + 2][y - 1] == 3 - Ycolor) { 
-			Map[x + 1][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y] == Ycolor && Map[x + 2][y + 1] == 3 - Ycolor) { 
-			Map[x + 1][y] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case RIGHT:
-	{
-		if (Map[x - 1][y] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) { 
-			Map[x - 1][y] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y + 1] == Ycolor && Map[x - 2][y + 1] == 3 - Ycolor) { 
-			Map[x - 1][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y + 2] == Ycolor && Map[x - 2][y + 3] == 3 - Ycolor) { 
-			Map[x - 1][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x][y + 2] == Ycolor && Map[x][y + 3] == 3 - Ycolor) { 
-			Map[x][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) { 
-			Map[x + 1][y] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y + 1] == Ycolor && Map[x + 2][y + 1] == 3 - Ycolor) { 
-			Map[x + 1][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y + 2] == Ycolor && Map[x + 2][y + 3] == 3 - Ycolor) { 
-			Map[x + 1][y + 2] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case UP_LEFT:
-	{
-		if (Map[x - 2][y - 2] == Ycolor && Map[x - 3][y - 3] == 3 - Ycolor) { 
-			Map[x - 2][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y - 1] == Ycolor && Map[x - 3][y - 1] == 3 - Ycolor) { 
-			Map[x - 2][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y] == Ycolor && Map[x - 3][y + 1] == 3 - Ycolor) { 
-			Map[x - 2][y] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y - 2] == Ycolor && Map[x - 1][y - 3] == 3 - Ycolor) { 
-			Map[x - 1][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y] == Ycolor && Map[x - 1][y + 1] == 3 - Ycolor) { 
-			Map[x - 1][y] = 3 - Ycolor;
-		}
-		if (Map[x][y - 2] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) { 
-			Map[x][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x][y - 1] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) { 
-			Map[x][y - 1] = 3 - Ycolor;
-		}
-		break;
-	}
-	case UP_RIGHT:
-	{
-		if (Map[x - 2][y] == Ycolor && Map[x - 3][y - 1] == 3 - Ycolor) { 
-			Map[x - 2][y] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y + 1] == Ycolor && Map[x - 3][y + 1] == 3 - Ycolor) { 
-			Map[x - 2][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x - 2][y + 2] == Ycolor && Map[x - 3][y + 3] == 3 - Ycolor) { 
-			Map[x - 2][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y] == Ycolor && Map[x - 1][y - 1] == 3 - Ycolor) { 
-			Map[x - 1][y] = 3 - Ycolor;
-		}
-		if (Map[x - 1][y + 2] == Ycolor && Map[x - 1][y + 3] == 3 - Ycolor) {
-			Map[x - 1][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x][y + 1] == Ycolor && Map[x + 1][y + 1] == 3 - Ycolor) { 
-			Map[x][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x][y + 2] == Ycolor && Map[x + 1][y + 3] == 3 - Ycolor) { 
-			Map[x][y + 2] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case DOWN_LEFT:
-	{
-		if (Map[x][y - 2] == Ycolor && Map[x - 1][y - 3] == 3 - Ycolor) { 
-			Map[x][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x][y - 1] == Ycolor && Map[x - 1][y - 1] == 3 - Ycolor) { 
-			Map[x][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y - 2] == Ycolor && Map[x + 1][y - 3] == 3 - Ycolor) { 
-			Map[x + 1][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y] == Ycolor && Map[x + 1][y + 1] == 3 - Ycolor) { 
-			Map[x + 1][y] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y - 2] == Ycolor && Map[x + 3][y - 3] == 3 - Ycolor) { 
-			Map[x + 2][y - 2] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y - 1] == Ycolor && Map[x + 3][y - 1] == 3 - Ycolor) { 
-			Map[x + 2][y - 1] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y] == Ycolor && Map[x + 3][y + 1] == 3 - Ycolor) { 
-			Map[x + 2][y] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	case DOWN_RIGHT:
-	{
-		if (Map[x][y + 1] == Ycolor && Map[x - 1][y + 1] == 3 - Ycolor) { 
-			Map[x][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x][y + 2] == Ycolor && Map[x - 1][y + 3] == 3 - Ycolor) { 
-			Map[x][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) { 
-			Map[x + 1][y] = 3 - Ycolor;
-		}
-		if (Map[x + 1][y + 2] == Ycolor && Map[x + 1][y + 3] == 3 - Ycolor) { 
-			Map[x + 1][y + 2] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y] == Ycolor && Map[x + 3][y - 1] == 3 - Ycolor) {
-			Map[x + 2][y] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y + 1] == Ycolor && Map[x + 3][y + 1] == 3 - Ycolor) {
-			Map[x + 2][y + 1] = 3 - Ycolor;
-		}
-		if (Map[x + 2][y + 2] == Ycolor && Map[x + 3][y + 3] == 3 - Ycolor) { 
-			Map[x + 2][y + 2] = 3 - Ycolor;
-		}
-
-		break;
-	}
-	default:break;
-	}
-	return cnt;
+	*Mmapvalue_next = MapValue(Mcolor, Map);
+	*Ymapvalue_next = MapValue(3-Mcolor, Map);
 }
 
-/*我走子之后调整棋盘*/
-void ChangeMap(int Mcolor, int x, int y, int option, int Map[][COL])
-{
-	PickChess(3 - Mcolor, x, y, option, Map);
-	NipChess(3 - Mcolor, x, y, option, Map);
-}
+
+
 
 
 /*最高层的函数  用来寻找下一步的落子位置和方向*/
@@ -798,6 +946,11 @@ void FindNext(int Mcolor, int Map[][COL],int *Nextx,int *Nexty,int *Nextoption)
 
 						buf.nip_num = NipNum(3-Mcolor, i, j, option, Map);
 						buf.pick_num = PickNum(3-Mcolor, i, j, option, Map);
+						buf.Ywalk_next = YcanWalkNext(3 - Mcolor, i, j, option, Map);
+						cohesionNext(Mcolor, i, j, option, Map,
+							&buf.Mcohesion_next, &buf.Ycohesion_next);
+						mapvalueNext(Mcolor, i, j, option, Map,
+							&buf.Mmapvalue_next, &buf.Ymapvalue_next);
 
 						Push_back(&list, &buf);
 					}
