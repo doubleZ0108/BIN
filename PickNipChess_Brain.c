@@ -27,15 +27,15 @@ typedef int bool;
 
 #define RET_EAT      0
 #define RET_WALKNUM  0
-#define RET_COHESION 0
-#define RET_POSVALUE 0
+#define RET_COHESION 1
+#define RET_POSVALUE 1
 
 
 #define YY 0
-#define AA 0
-#define BB 0
-#define CC 0
-#define DD 0
+#define AA 1
+#define BB 2
+#define CC 3
+#define DD 4
 int POSVALUE[ROW][COL] =
 {
 	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
@@ -45,8 +45,8 @@ int POSVALUE[ROW][COL] =
 	YY,YY,AA,BB,BB,CC,CC,CC,CC,CC,CC,BB,BB,AA,YY,YY,
 	YY,YY,BB,BB,CC,CC,CC,DD,DD,CC,CC,CC,BB,BB,YY,YY,
 	YY,YY,BB,CC,CC,CC,DD,DD,DD,DD,CC,CC,CC,BB,YY,YY,
-	YY,YY,CC,CC,CC,DD,DD,DD,DD,DD,DD,CC,CC,CC,YY,YY,
-	YY,YY,CC,CC,CC,DD,DD,DD,DD,DD,DD,CC,CC,CC,YY,YY,
+	YY,YY,CC,CC,CC,DD,DD,DD,DD,DD,DD,CC,CC,CC,YY,YY,//
+	YY,YY,CC,CC,CC,DD,DD,DD,DD,DD,DD,CC,CC,CC,YY,YY,//
 	YY,YY,BB,CC,CC,CC,DD,DD,DD,DD,CC,CC,CC,BB,YY,YY,
 	YY,YY,BB,BB,CC,CC,CC,DD,DD,CC,CC,CC,BB,BB,YY,YY,
 	YY,YY,AA,BB,BB,CC,CC,CC,CC,CC,CC,BB,BB,AA,YY,YY,
@@ -67,7 +67,8 @@ struct Chess
 	int option;
 	int pick_num, nip_num;	//走当前步可以挑吃和夹持的数量
 
-	int Ywalk_next;			//对方下局的行动力
+	int Mwalknum_next;
+	int Ywalknum_next;			//对方下局的行动力
 
 	int Mcohesion_next;			//我方的凝聚力
 	int Ycohesion_next;			//对方的凝聚力
@@ -89,8 +90,7 @@ struct LinkList
 void CreateLink(LinkList *list)
 {
 	list->head = list->rear = malloc(sizeof*list->head);
-	struct NODE *move = list->head;
-	move->next = NULL;
+	list->head->next = NULL;
 }
 void DestroyLink(LinkList *list)
 {
@@ -112,41 +112,20 @@ void Push_back(LinkList *list, Chess *buf)
 	list->rear->next = fresh;
 	list->rear = list->rear->next;		//更新尾指针
 }
-void FindMaxValue(LinkList *list, Chess *save)
+
+/*输出所有可以的移动方式的参数列表*/
+void showList(const LinkList *list)
 {
 	struct NODE *move = list->head->next;
-	int maxvalue =
-		(move->data.nip_num + move->data.pick_num)*RET_EAT
-		- move->data.Ywalk_next*RET_WALKNUM
-		+ move->data.Mcohesion_next*RET_COHESION
-		- move->data.Ycohesion_next*RET_COHESION
-		+ move->data.Mmapvalue_next*RET_POSVALUE
-		- move->data.Ymapvalue_next*RET_POSVALUE;
 
-	Chess buf = move->data;
-
-	int bufvalue;
-	
-	for (move=move->next; move != NULL; move = move->next)
+	for (; move != NULL; move = move->next)
 	{
-		bufvalue=
-			(move->data.nip_num + move->data.pick_num)*RET_EAT
-			- move->data.Ywalk_next*RET_WALKNUM
-			+ move->data.Mcohesion_next*RET_COHESION
-			- move->data.Ycohesion_next*RET_COHESION
-			+ move->data.Mmapvalue_next*RET_POSVALUE
-			- move->data.Ymapvalue_next*RET_POSVALUE;
-
-		if (bufvalue > maxvalue)
-		{
-			maxvalue = bufvalue;
-				
-			buf = move->data;
-		}
+		printf("(%d,%d)[%d]", move->data.x, move->data.y, move->data.option);
+		//printf(" cohesion is %d - %d\n", move->data.Mcohesion_next,move->data.Ycohesion_next);
+		printf("walknum is %d - %d\n", move->data.Mwalknum_next, move->data.Ywalknum_next);
 	}
-
-	*save = buf;
 }
+
 
 /*随机落子√*/
 void RandFind(LinkList *list, Chess *save)
@@ -160,7 +139,7 @@ void RandFind(LinkList *list, Chess *save)
 		sum++;
 	}
 
-	int cnt = rand() % (sum-1);
+	int cnt = rand() % (sum - 1);
 	sum = 0;
 	for (move = list->head->next; move != NULL; move = move->next)
 	{
@@ -170,6 +149,39 @@ void RandFind(LinkList *list, Chess *save)
 			*save = move->data;
 		}
 	}
+}
+/*寻找价值和最大的走法*/
+void FindMaxValue(LinkList *list, Chess *save)
+{
+	struct NODE *move = list->head->next;
+	int maxvalue =
+		(move->data.nip_num + move->data.pick_num)*RET_EAT
+		+ (move->data.Mwalknum_next - move->data.Ywalknum_next)*RET_WALKNUM
+		+ (move->data.Mcohesion_next - move->data.Ycohesion_next)*RET_COHESION
+		+ (move->data.Mmapvalue_next - move->data.Ymapvalue_next)*RET_POSVALUE;
+
+
+	Chess buf = move->data;
+
+	int bufvalue;
+
+	for (move = move->next; move != NULL; move = move->next)
+	{
+		bufvalue =
+			(move->data.nip_num + move->data.pick_num)*RET_EAT
+			+ (move->data.Mwalknum_next - move->data.Ywalknum_next)*RET_WALKNUM
+			+ (move->data.Mcohesion_next - move->data.Ycohesion_next)*RET_COHESION
+			+ (move->data.Mmapvalue_next - move->data.Ymapvalue_next)*RET_POSVALUE;
+
+		if (bufvalue > maxvalue)
+		{
+			maxvalue = bufvalue;
+
+			buf = move->data;
+		}
+	}
+
+	*save = buf;
 }
 
 ////////////////////////////////////////////
@@ -679,6 +691,7 @@ void ChangeMap(int color, int x, int y, int option, int Map[][COL])
 int Cohesion(int color, int Map[][COL])
 {
 	int cohesion = 0;
+
 	for (int i = 2; i < 14; ++i)
 	{
 		for (int j = 2; j < 14; ++j)
@@ -689,7 +702,7 @@ int Cohesion(int color, int Map[][COL])
 				{
 					for (int b = -1; b < 2; ++b)
 					{
-						if (Map[i + 1][j + b] == color)
+						if (Map[i + a][j + b] == color)
 						{
 							cohesion++;
 						}
@@ -705,23 +718,47 @@ int Cohesion(int color, int Map[][COL])
 int MapValue(int color, int Map[][COL])
 {
 	int mapvalue = 0;
+
 	for (int i = 2; i < 14; ++i)
 	{
 		for (int j = 2; j < 14; ++j)
 		{
 			if (Map[i][j] == color)
 			{
-				mapvalue++;
+				mapvalue += POSVALUE[i][j];
 			}
 		}
 	}
 
 	return mapvalue;
 }
+/*color方的行动力*/
+int WalkNum(int color, int Map[][COL])
+{
+	int walk_num = 0;
+
+	for (int i = 2; i < 14; ++i)
+	{
+		for (int j = 2; j < 14; ++j)
+		{
+			if (Map[i][j] == color)
+			{
+				for (int op = UP; op <= DOWN_RIGHT; ++op)
+				{
+					if (canWalk(i, j, op, Map))
+					{
+						walk_num++;
+					}
+				}
+			}
+		}
+	}
+
+	return walk_num;
+}
 
 
-
-/*这样的走子 挑吃个数√*/
+/*这样的走子 我方挑吃个数√*/
 int PickNum(int Ycolor, int x, int y, int option, int Map[][COL])
 {
 	int cnt = 0;
@@ -846,7 +883,7 @@ int PickNum(int Ycolor, int x, int y, int option, int Map[][COL])
 
 	return cnt;
 }
-/*这样的走子 夹吃个数√*/
+/*这样的走子 我方夹吃个数√*/
 int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 {
 	int cnt = 0;
@@ -1063,40 +1100,27 @@ int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 	}
 	return cnt;
 }
-/*这样的走子 对方下局的行动力*/
-int YcanWalkNext(int Ycolor, int x, int y, int option, int Map[][COL])
+/*这样的走子 我方和对方下局的行动力*/
+void walknumNext(int Mcolor, int x, int y, int option, int Map[][COL],
+	int *Mcanwalk, int *Ycanwalk)
 {
 	int copyMap[ROW][COL] = { 0 };
-	memcpy(copyMap, Map, sizeof(Map));
-	ChangeMap(3 - Ycolor, x, y, option, copyMap);
+	memcpy(copyMap, Map, ROW*COL*sizeof(Map));
 
-	int walk_num = 0;
+	setMap(Mcolor, x, y, option, copyMap);
+	ChangeMap(Mcolor, x, y, option, copyMap);
 
-	for (int i = 2; i < 14; ++i)
-	{
-		for (int j = 2; j < 14; ++j)
-		{
-			if (copyMap[i][j] == Ycolor)
-			{
-				for (int op = UP; op <= DOWN_RIGHT; ++op)
-				{
-					if (canWalk(i, j, op, copyMap))
-					{
-						walk_num++;
-					}
-				}
-			}
-		}
-	}
-
-	return walk_num;
+	*Mcanwalk = WalkNum(Mcolor, copyMap);
+	*Ycanwalk = WalkNum(3 - Mcolor, copyMap);
 }
 /*这样的走子 我方和对方下局的凝聚力*/
 void cohesionNext(int Mcolor, int x, int y, int option, int Map[][COL],
 	int *Mcohesion,int *Ycohesion)
 {
 	int copyMap[ROW][COL] = { 0 };
-	memcpy(copyMap, Map, sizeof(Map));
+	memcpy(copyMap, Map, ROW*COL*sizeof(Map));
+
+	setMap(Mcolor, x, y, option, copyMap);
 	ChangeMap(Mcolor, x, y, option, copyMap);
 
 	*Mcohesion = Cohesion(Mcolor, copyMap);
@@ -1107,11 +1131,13 @@ void mapvalueNext(int Mcolor, int x, int y, int option, int Map[][COL],
 	int *Mmapvalue_next, int *Ymapvalue_next)
 {
 	int copyMap[ROW][COL] = { 0 };
-	memcpy(copyMap, Map, sizeof(Map));
+	memcpy(copyMap, Map, ROW*COL*sizeof(Map));
+
+	setMap(Mcolor, x, y, option, copyMap);
 	ChangeMap(Mcolor, x, y, option, copyMap);
 
-	*Mmapvalue_next = MapValue(Mcolor, Map);
-	*Ymapvalue_next = MapValue(3-Mcolor, Map);
+	*Mmapvalue_next = MapValue(Mcolor, copyMap);
+	*Ymapvalue_next = MapValue(3-Mcolor, copyMap);
 }
 
 
@@ -1139,13 +1165,20 @@ void FindNext(int Mcolor, int Map[][COL],int *Nextx,int *Nexty,int *Nextoption)
 						buf.option = option;
 						buf.x = i; buf.y = j;
 
-						/*buf.nip_num = NipNum(3-Mcolor, i, j, option, Map);
+						buf.nip_num = NipNum(3-Mcolor, i, j, option, Map);
 						buf.pick_num = PickNum(3-Mcolor, i, j, option, Map);
-						buf.Ywalk_next = YcanWalkNext(3 - Mcolor, i, j, option, Map);
+
+						/////////////////////////////
+						
+						//////////////////////////////
+						walknumNext(Mcolor, i, j, option, Map,
+							&buf.Mwalknum_next, &buf.Ywalknum_next);
+
 						cohesionNext(Mcolor, i, j, option, Map,
 							&buf.Mcohesion_next, &buf.Ycohesion_next);
+
 						mapvalueNext(Mcolor, i, j, option, Map,
-							&buf.Mmapvalue_next, &buf.Ymapvalue_next);*/
+							&buf.Mmapvalue_next, &buf.Ymapvalue_next);
 
 						Push_back(&list, &buf);
 					}
@@ -1159,9 +1192,12 @@ void FindNext(int Mcolor, int Map[][COL],int *Nextx,int *Nexty,int *Nextoption)
 	*Nexty = buf.y;
 	*Nextoption = buf.option;
 
+	//printf("/////////////////////////////////\n");
+	//showList(&list);
+	//printf("/////////////////////////////////\n");
+
 	DestroyLink(&list);
 }
-
 
 
 
