@@ -25,9 +25,9 @@ typedef int bool;
 #define DOWN_LEFT 6
 #define DOWN_RIGHT 7
 
-#define RET_EAT      0
-#define RET_WALKNUM  0
-#define RET_COHESION 1
+#define RET_EAT      1
+#define RET_WALKNUM  1
+#define RET_COHESION 2			//Äý¾ÛÁ¦nice
 #define RET_POSVALUE 1
 
 
@@ -55,6 +55,7 @@ int POSVALUE[ROW][COL] =
 	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
 	YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,YY,
 };
+
 ///////////////////////////////////////////
 /*Á´±í²Ù×÷*/
 typedef struct Chess Chess;
@@ -501,7 +502,7 @@ void NipChess(int Ycolor, int x, int y, int option, int Map[][COL])
 		if (Map[x][y + 1] == Ycolor && Map[x - 1][y + 2] == 3 - Ycolor) {
 			Map[x][y + 1] = 3 - Ycolor;
 		}
-		if (Map[x + 1][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) {
+		if (Map[x + 1][y - 1] == Ycolor && Map[x + 1][y - 2] == 3 - Ycolor) {
 			Map[x + 1][y - 1] = 3 - Ycolor;
 		}
 		if (Map[x + 1][y + 1] == Ycolor && Map[x + 1][y + 2] == 3 - Ycolor) {
@@ -559,7 +560,7 @@ void NipChess(int Ycolor, int x, int y, int option, int Map[][COL])
 		if (Map[x][y + 2] == Ycolor && Map[x][y + 3] == 3 - Ycolor) {
 			Map[x][y + 2] = 3 - Ycolor;
 		}
-		if (Map[x + 1][y] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) {
+		if (Map[x + 1][y] == Ycolor && Map[x + 2][y - 1] == 3 - Ycolor) {
 			Map[x + 1][y] = 3 - Ycolor;
 		}
 		if (Map[x + 1][y + 1] == Ycolor && Map[x + 2][y + 1] == 3 - Ycolor) {
@@ -588,7 +589,7 @@ void NipChess(int Ycolor, int x, int y, int option, int Map[][COL])
 		if (Map[x - 1][y] == Ycolor && Map[x - 1][y + 1] == 3 - Ycolor) {
 			Map[x - 1][y] = 3 - Ycolor;
 		}
-		if (Map[x][y - 2] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
+		if (Map[x][y - 2] == Ycolor && Map[x + 1][y - 3] == 3 - Ycolor) {
 			Map[x][y - 2] = 3 - Ycolor;
 		}
 		if (Map[x][y - 1] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
@@ -923,7 +924,7 @@ int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 		if (Map[x][y + 1] == Ycolor && Map[x - 1][y + 2] == 3 - Ycolor) {
 			cnt++;
 		}
-		if (Map[x + 1][y - 1] == Ycolor && Map[x - 1][y - 2] == 3 - Ycolor) {
+		if (Map[x + 1][y - 1] == Ycolor && Map[x + 1][y - 2] == 3 - Ycolor) {
 			cnt++;
 		}
 		if (Map[x + 1][y + 1] == Ycolor && Map[x + 1][y + 2] == 3 - Ycolor) {
@@ -981,7 +982,7 @@ int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 		if (Map[x][y + 2] == Ycolor && Map[x][y + 3] == 3 - Ycolor) {
 			cnt++;
 		}
-		if (Map[x + 1][y] == Ycolor && Map[x - 2][y - 1] == 3 - Ycolor) {
+		if (Map[x + 1][y] == Ycolor && Map[x + 2][y - 1] == 3 - Ycolor) {
 			cnt++;
 		}
 		if (Map[x + 1][y + 1] == Ycolor && Map[x + 2][y + 1] == 3 - Ycolor) {
@@ -1010,7 +1011,7 @@ int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 		if (Map[x - 1][y] == Ycolor && Map[x - 1][y + 1] == 3 - Ycolor) {
 			cnt++;
 		}
-		if (Map[x][y - 2] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
+		if (Map[x][y - 2] == Ycolor && Map[x + 1][y - 3] == 3 - Ycolor) {
 			cnt++;
 		}
 		if (Map[x][y - 1] == Ycolor && Map[x + 1][y - 1] == 3 - Ycolor) {
@@ -1252,7 +1253,7 @@ int main(void)
 		}
 		getchar();
 
-		//showMap(Map);
+		showMap(Map);
 	}
 
 	system("pause");
