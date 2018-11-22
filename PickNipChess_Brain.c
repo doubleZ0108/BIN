@@ -25,11 +25,13 @@ typedef int bool;
 #define DOWN_LEFT 6
 #define DOWN_RIGHT 7
 
-#define RET_EAT      1
-#define RET_WALKNUM  1
-#define RET_COHESION 2			//凝聚力nice
-#define RET_POSVALUE 1
+#define RET_EAT      0
+#define RET_WALKNUM  0
+#define RET_COHESION 1			//凝聚力nice
+#define RET_POSVALUE 0
 
+/////////////////////////////////////
+#define RET_CENTRA   1
 
 #define YY 0
 #define AA 1
@@ -66,7 +68,10 @@ struct Chess
 	int x;					//当前步的信息
 	int y;
 	int option;
-	int pick_num, nip_num;	//走当前步可以挑吃和夹持的数量
+	//int pick_num, nip_num;	//走当前步可以挑吃和夹持的数量
+
+	int Meatnum_next;
+	int Yeatnum_next;
 
 	int Mwalknum_next;
 	int Ywalknum_next;			//对方下局的行动力
@@ -76,6 +81,10 @@ struct Chess
 
 	int Mmapvalue_next;				//棋盘位置值
 	int Ymapvalue_next;
+
+
+	///////////////////////////////////
+	int centra_next;			//是否向中间集中
 };
 struct NODE
 {
@@ -123,7 +132,8 @@ void showList(const LinkList *list)
 	{
 		printf("(%d,%d)[%d]", move->data.x, move->data.y, move->data.option);
 		//printf(" cohesion is %d - %d\n", move->data.Mcohesion_next,move->data.Ycohesion_next);
-		printf("walknum is %d - %d\n", move->data.Mwalknum_next, move->data.Ywalknum_next);
+		//printf("walknum is %d - %d\n", move->data.Mwalknum_next, move->data.Ywalknum_next);
+		printf("centra is %d\n", move->data.centra_next);
 	}
 }
 
@@ -156,7 +166,9 @@ void FindMaxValue(LinkList *list, Chess *save)
 {
 	struct NODE *move = list->head->next;
 	int maxvalue =
-		(move->data.nip_num + move->data.pick_num)*RET_EAT
+		//(move->data.nip_num + move->data.pick_num)*RET_EAT
+		+move->data.centra_next*RET_CENTRA
+		+(move->data.Meatnum_next - move->data.Yeatnum_next)*RET_EAT
 		+ (move->data.Mwalknum_next - move->data.Ywalknum_next)*RET_WALKNUM
 		+ (move->data.Mcohesion_next - move->data.Ycohesion_next)*RET_COHESION
 		+ (move->data.Mmapvalue_next - move->data.Ymapvalue_next)*RET_POSVALUE;
@@ -169,7 +181,9 @@ void FindMaxValue(LinkList *list, Chess *save)
 	for (move = move->next; move != NULL; move = move->next)
 	{
 		bufvalue =
-			(move->data.nip_num + move->data.pick_num)*RET_EAT
+			//(move->data.nip_num + move->data.pick_num)*RET_EAT
+			+move->data.centra_next*RET_CENTRA
+			+ (move->data.Meatnum_next - move->data.Yeatnum_next)*RET_EAT
 			+ (move->data.Mwalknum_next - move->data.Ywalknum_next)*RET_WALKNUM
 			+ (move->data.Mcohesion_next - move->data.Ycohesion_next)*RET_COHESION
 			+ (move->data.Mmapvalue_next - move->data.Ymapvalue_next)*RET_POSVALUE;
@@ -1101,6 +1115,43 @@ int NipNum(int Ycolor, int x, int y, int option, int Map[][COL])
 	}
 	return cnt;
 }
+
+
+/*这样的走子 我方和对方下局的吃子数*/
+void eatnumNext(int Mcolor, int x, int y, int option, int Map[][COL],
+	int *Meatnum, int *Yeatnum)
+{
+	int copyMap[ROW][COL] = { 0 };
+	memcpy(copyMap, Map, ROW*COL * sizeof(Map));
+
+	*Meatnum = PickNum(3 - Mcolor, x, y, option, copyMap) + 
+		NipNum(3 - Mcolor, x, y, option, copyMap);
+
+	setMap(Mcolor, x, y, option, copyMap);
+	ChangeMap(Mcolor, x, y, option, copyMap);
+
+	*Yeatnum = 0;
+
+	for (int i = 2; i < 14; ++i)
+	{
+		for (int j = 2; j < 14; ++j)
+		{
+			for (int choice = UP; choice <= DOWN_RIGHT; ++choice)
+			{
+				if (canWalk(i, j, choice, copyMap))
+				{
+					int saveEatNum = PickNum(Mcolor, i, j, choice, copyMap) +
+						NipNum(Mcolor, i, j, choice, copyMap);
+
+					if (saveEatNum > *Yeatnum)
+					{
+						*Yeatnum = saveEatNum;
+					}
+				}
+			}
+		}
+	}
+}
 /*这样的走子 我方和对方下局的行动力*/
 void walknumNext(int Mcolor, int x, int y, int option, int Map[][COL],
 	int *Mcanwalk, int *Ycanwalk)
@@ -1142,7 +1193,43 @@ void mapvalueNext(int Mcolor, int x, int y, int option, int Map[][COL],
 }
 
 
+bool ifcentra(int Mcolor, int x, int y, int option)
+{
+	if (x < 7 && y < 7)
+	{
+		return (option == DOWN || option == DOWN_RIGHT);
+	}
+	else if (x < 7 && y>8)
+	{
+		return (option == DOWN || option == DOWN_LEFT);
+	}
+	else if (x > 8 && y < 7)
+	{
+		return (option == UP || option == UP_RIGHT);
+	}
+	else if (x > 8 && y > 8)
+	{
+		return (option == UP || option == UP_LEFT);
+	}
+	else if ((x == 7 || x == 8) && y < 7)
+	{
+		return (option == RIGHT);
+	}
+	else if ((y == 7 || y == 8) && x < 7)
+	{
+		return (option == DOWN);
+	}
+	else if ((x == 7 || x == 8) && y > 8)
+	{
+		return (option == LEFT);
+	}
+	else if ((y == 7 || y == 8) && x > 8)
+	{
+		return (option == UP);
+	}
 
+	return false;
+}
 
 
 /*最高层的函数  用来寻找下一步的落子位置和方向*/
@@ -1166,11 +1253,15 @@ void FindNext(int Mcolor, int Map[][COL],int *Nextx,int *Nexty,int *Nextoption)
 						buf.option = option;
 						buf.x = i; buf.y = j;
 
-						buf.nip_num = NipNum(3-Mcolor, i, j, option, Map);
-						buf.pick_num = PickNum(3-Mcolor, i, j, option, Map);
+						/*buf.nip_num = NipNum(3-Mcolor, i, j, option, Map);
+						buf.pick_num = PickNum(3-Mcolor, i, j, option, Map);*/
+
+						eatnumNext(Mcolor, i, j, option, Map,
+							&buf.Meatnum_next, &buf.Yeatnum_next);
 
 						/////////////////////////////
-						
+						buf.centra_next = ifcentra(Mcolor, i, j, option);
+
 						//////////////////////////////
 						walknumNext(Mcolor, i, j, option, Map,
 							&buf.Mwalknum_next, &buf.Ywalknum_next);
@@ -1193,10 +1284,10 @@ void FindNext(int Mcolor, int Map[][COL],int *Nextx,int *Nexty,int *Nextoption)
 	*Nexty = buf.y;
 	*Nextoption = buf.option;
 
-	//printf("/////////////////////////////////\n");
-	//showList(&list);
-	//printf("/////////////////////////////////\n");
-
+	/*printf("/////////////////////////////////\n");
+	showList(&list);
+	printf("/////////////////////////////////\n");
+*/
 	DestroyLink(&list);
 }
 
