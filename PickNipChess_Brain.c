@@ -25,13 +25,14 @@ typedef int bool;
 #define DOWN_LEFT 6
 #define DOWN_RIGHT 7
 
-#define RET_EAT      0
+#define RET_EAT      1
 #define RET_WALKNUM  0
 #define RET_COHESION 1			//凝聚力nice
-#define RET_POSVALUE 0
+#define RET_POSVALUE 1
 
 /////////////////////////////////////
 #define RET_CENTRA   1
+/////////////////////////////////////
 
 #define YY 0
 #define AA 1
@@ -84,7 +85,7 @@ struct Chess
 
 
 	///////////////////////////////////
-	int centra_next;			//是否向中间集中
+	bool centra_next;			//是否向中间集中
 };
 struct NODE
 {
@@ -1230,7 +1231,6 @@ bool ifcentra(int Mcolor, int x, int y, int option)
 
 	return false;
 }
-
 
 /*最高层的函数  用来寻找下一步的落子位置和方向*/
 void FindNext(int Mcolor, int Map[][COL],int *Nextx,int *Nexty,int *Nextoption)
