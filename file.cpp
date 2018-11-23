@@ -136,6 +136,7 @@ void copypicture()
 	outfile.close();
 	infile.close();
 }
+
 int main(void)
 {
 	//要以磁盘文件为对象进行输入输出,必须定义一个文件流类的对象,通过文件流对象将数据从
@@ -161,10 +162,10 @@ int main(void)
 
 
 	/*关闭文件*/
-	//outfile.close();
+	outfile.close();
 
 	/*C++对ASCII文件的读写操作*/
-	//ASCIIfile();
+	ASCIIfile();
 
 	/*C++对二进制文件的读写操作*/
 	//二进制文件可以即是输出文件也是输入文件 fstream对象 参数为ios::out|ios::in|ios::binary
@@ -173,7 +174,7 @@ int main(void)
 
 	/*二进制打开图片复制*/
 	//不知道bug在哪,不能完全复制
-	//copypicture();
+	copypicture();
 
 	system("pause");
 	return 0;
