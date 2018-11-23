@@ -58,8 +58,56 @@ void ASCIIfile()
 
 void Binaryfile()
 {
-	
+	struct Student
+	{
+		char name[20];
+		int num;
+		int age;
+		char sex;
+	};
 
+	Student stu[3] = { {"Li",1001,18,'f'},{"Zhang",1002,19,'m'},{"Gui",1003,17,'f'} };
+	ofstream outfile("student.txt", ios::binary);
+	if (!outfile)
+	{
+		cerr << "open student.txt error!" << endl;
+		abort();			//作用和exit()相同
+	}
+
+	//两种输出方式
+
+	/*for (int i = 0; i < 3; ++i)
+	{
+		outfile.write((char*)(&stu[i]), sizeof(stu[i]));
+	}*/
+	outfile.write((char*)&stu[0], sizeof(stu));
+
+	outfile.close();
+
+
+	ifstream infile("student.txt", ios::binary);
+	if (!infile)
+	{
+		cerr << "open student.txt error!" << endl;
+		abort();			//作用和exit()相同
+	}
+
+	Student save[3];
+	/*for (int i = 0; i < 3; ++i)
+	{
+		infile.read((char*)&save[i], sizeof(save[i]));
+	}*/
+	infile.read((char*)&save[0], sizeof(save));
+	infile.close();
+
+	for (int i = 0; i < 3; ++i)
+	{
+		cout << "NO." << i + 1 << endl;
+		cout << "name: " << save[i].name << endl;
+		cout << "num: " << save[i].num << endl;
+		cout << "age: " << save[i].age << endl;
+		cout << "sex: " << save[i].sex << endl;
+	}
 }
 
 void copypicture()
@@ -113,17 +161,19 @@ int main(void)
 
 
 	/*关闭文件*/
-	outfile.close();
+	//outfile.close();
 
 	/*C++对ASCII文件的读写操作*/
-	ASCIIfile();
+	//ASCIIfile();
 
 	/*C++对二进制文件的读写操作*/
+	//二进制文件可以即是输出文件也是输入文件 fstream对象 参数为ios::out|ios::in|ios::binary
+	//还有很多偏移的函数不体现了
 	Binaryfile();
 
 	/*二进制打开图片复制*/
 	//不知道bug在哪,不能完全复制
-	copypicture();
+	//copypicture();
 
 	system("pause");
 	return 0;
