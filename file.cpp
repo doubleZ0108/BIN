@@ -9,7 +9,7 @@ C++文件
 
 using namespace std;
 
-void ASCIIoperate()
+void ASCIIfile()
 {
 	int arr[10];
 	for (int i = 0; i < 10; ++i)
@@ -17,10 +17,12 @@ void ASCIIoperate()
 		arr[i] = i;
 	}
 
+	/*输入到文件中*/
 	ofstream outfile("test.txt", ios::out);
 	if (!outfile)
 	{
 		cerr << "open error!" << endl;
+		exit(-1);
 	}
 
 	for (int i = 0; i < 10; ++i)
@@ -29,6 +31,62 @@ void ASCIIoperate()
 	}
 
 	outfile.close();
+
+
+	/*从文件中读*/
+	ifstream infile("test.txt", ios::in | ios::_Nocreate);
+		//1. 可以使用 | 来连接多个设定
+		//2. nocreate代表,打开一个文件时如果不存在就返回0, 不会不存在的时候新建一个
+	if (!infile)
+	{
+		cerr << "open error!" << endl;
+		exit(-1);
+	}
+
+	int save[10];
+	for (int i = 0; i < 10; ++i)
+	{
+		infile >> save[i];
+		cout << save[i] << ' ';
+	}
+
+	infile.close();
+
+
+	//当然,put() get() getline()等成员函数也都是可以用的
+}
+
+void Binaryfile()
+{
+	
+
+}
+
+void copypicture()
+{
+	ofstream outfile("copy.jpg", ios::out | ios::binary);
+	ifstream infile("forest.jpg", ios::in | ios::_Nocreate | ios::binary);
+	if (!outfile)
+	{
+		cerr << "open copy.jpg failed!" << endl;
+		exit(-1);
+	}
+	if (!infile)
+	{
+		cerr << "open forest.jpg failed!" << endl;
+		exit(-1);
+	}
+
+	char buf;
+	while (!infile.eof())
+	{
+		infile >> buf;
+		outfile << buf;
+	}
+	cout << "copy picture forest.jpg success!" << endl;
+
+	outfile.close();
+	infile.close();
 }
 int main(void)
 {
@@ -50,6 +108,7 @@ int main(void)
 	if (!outfile)
 	{
 		cerr << "open error!" << endl;
+		exit(-1);
 	}
 
 
@@ -57,9 +116,14 @@ int main(void)
 	outfile.close();
 
 	/*C++对ASCII文件的读写操作*/
-	ASCIIoperate();
+	ASCIIfile();
 
+	/*C++对二进制文件的读写操作*/
+	Binaryfile();
 
+	/*二进制打开图片复制*/
+	//不知道bug在哪,不能完全复制
+	copypicture();
 
 	system("pause");
 	return 0;
