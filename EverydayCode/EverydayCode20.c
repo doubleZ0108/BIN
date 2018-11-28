@@ -209,6 +209,84 @@ void InsertSort(const struct NODE *head)
 		front = turn;
 	}
 }
+void QuickSort(struct NODE *head, struct NODE *tail)
+{
+	struct NODE *key, *move;
+	struct NODE *low, *high;
+
+	if (head->next == tail || head->next->next == tail)
+	{
+		return;
+	}
+
+	key = head->next;
+	low = key;
+	high = key->next->next;
+	move = key->next;
+
+	while (move != tail)
+	{
+		if (move->data.num < key->data.num)
+			//把他插到头上去
+		{
+			move->next = head->next;
+			head->next = move;
+
+			low->next = high;
+			if (!high) { break; }
+
+			move = high;
+			high = high->next;
+		}
+		else
+		{
+			if (!high) { break; }
+			move = move->next;
+			low = low->next;
+			high = high->next;
+		}
+	}
+
+	QuickSort(head, key);
+	QuickSort(key, tail);
+}
+
+void QuickSort_cover(struct NODE *head, struct NODE *tail)
+{
+	struct NODE *key, *move, *front, *back;
+
+	if (head->next == tail || head->next->next == tail) { return; }
+
+	key = head->next;
+	front = key;
+	back = key->next->next;
+	move = key->next;
+
+	while (move != tail)
+	{
+		if (move->data.num < key->data.num)
+		{
+			move->next = head->next;
+			head->next = move;
+			front->next = back;
+
+			if (!back) { break; }
+
+			move = back;
+			back = back->next;
+		}
+		else
+		{
+			if (!back) { break; }
+			move = move->next;
+			front = front->next;
+			back = back->next;
+		}
+	}
+
+	QuickSort_cover(head, key);
+	QuickSort_cover(key, tail);
+}
 int main(void)
 {
 	struct NODE *head = CreateLink();
@@ -225,6 +303,8 @@ int main(void)
 	//BubbleSort(head);
 	//SelectSort(head);
 	//InsertSort(head);
+	//QuickSort(head, NULL);
+	//QuickSort_cover(head, NULL);
 	OutputLink(head);
 
 
