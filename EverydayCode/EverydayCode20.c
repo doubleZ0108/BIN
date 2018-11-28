@@ -136,6 +136,79 @@ void DeleteLink(const struct NODE *head)
 	}
 }
 
+void BubbleSort(const struct NODE *head)
+{
+	struct NODE *turn, *move;
+	struct NODE *save = NULL;
+	struct Student buf;
+
+	for (turn = head->next; turn->next != NULL; turn = turn->next)
+	{
+		for (move = head; move->next != save; move = move->next)
+		{
+			if (move->data.num > move->next->data.num)
+			{
+				buf = move->data;
+				move->data = move->next->data;
+				move->next->data = buf;
+			}
+		}
+		save = move;
+	}
+}
+void SelectSort(const struct NODE *head)
+{
+	struct NODE *turn, *move, *max;
+	struct Student buf;
+
+	for (turn = head->next; turn != NULL; turn = turn->next)
+	{
+		max = turn;
+		for (move = turn->next; move != NULL; move = move->next)
+		{
+			if (move->data.num > max->data.num)
+			{
+				max = move;
+			}
+		}
+
+		if (max != turn)
+		{
+			buf = max->data;
+			max->data = turn->data;
+			turn->data = buf;
+		}
+	}
+}
+void InsertSort(const struct NODE *head)
+{
+	struct NODE *turn, *move;
+	struct NODE *front=head->next, *back = NULL;
+
+	for (turn = head->next->next; turn != NULL; turn = turn->next)
+	{
+		for (move = head; move->next != turn; move = move->next)
+		{
+			if (move->next->data.num > turn->data.num)
+			{
+				//front = turn;			//加这条语句是错误的
+				//这里注意, 我们的front是turn的循环开始前更新的,不是在这里更新的
+				//front初始化的意义也是在此
+
+				back = turn->next;
+
+				turn->next = move->next;
+				move->next = turn;
+
+				front->next = back;
+				turn = front;
+
+				break;
+			}
+		}
+		front = turn;
+	}
+}
 int main(void)
 {
 	struct NODE *head = CreateLink();
@@ -145,7 +218,13 @@ int main(void)
 	//InsertLink(head, FRONT);
 	//InsertLink(head, BACK);
 
-	DeleteLink(head);
+	//DeleteLink(head);
+	//9 6 9 1 4 2 7 3 8 5
+
+
+	//BubbleSort(head);
+	//SelectSort(head);
+	//InsertSort(head);
 	OutputLink(head);
 
 
