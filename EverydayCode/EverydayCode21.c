@@ -59,9 +59,9 @@ void GetTop(const Stack *stack)
 }
 void showStack(const Stack *stack)
 {
-	struct NODE *move = stack->top->next;
+	struct NODE *move = stack->top;
 
-	for (; move != NULL; move = move->next)
+	for (; move != stack->bottom; move = move->next)
 	{
 		printf("|%d|\n", move->data.num);
 	}
@@ -71,12 +71,18 @@ void showStack(const Stack *stack)
 void Push(struct NODE* *top)
 {
 	struct NODE *fresh = malloc(sizeof*fresh);
-
+	if (!fresh)
+	{
+		printf("Memory alloction failed!\n");
+		exit(-1);
+	}
 	printf("请输入入栈结点信息: ");
 	scanf("%d", &fresh->data.num);
 
 	fresh->next = (*top);
-	(*top)->next = fresh;
+	//(*top)->next = fresh;		//是在头上插入,所以不用也不能加这句
+
+	(*top) = fresh;
 }
 void Pop(const Stack *stack, struct NODE* *top)
 {
@@ -107,6 +113,7 @@ void DestroyStack(Stack *stack)
 		printf("栈已销毁!\n");
 	}
 }
+
 int main(void)
 {
 	Stack *stack = CreateStack();
