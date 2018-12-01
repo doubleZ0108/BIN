@@ -31,7 +31,6 @@ void reverse(int *start, int *end)
 		*pe = buf;
 	}
 }
-
 void showArray(int arr[], int size)
 {
 	for (int *parr = arr; parr < arr + size; ++parr)
@@ -40,6 +39,7 @@ void showArray(int arr[], int size)
 	}
 	printf("\n");
 }
+
 void findNext(int arr[], int size)
 //注: 如果当前已经是最后一个序列了(987654321), 则会不停的循环等待
 {
@@ -63,29 +63,61 @@ void findNext(int arr[], int size)
 	/*4. 将换后的 i-1之后的元素逆序*/
 	reverse(&arr[i], &arr[size - 1]);
 }
+void Permutation_4process(int arr[], int size)
+{
+	for (int i = 0; i < Fact(size) - 1; ++i)
+		//这里用阶乘-1作为循环终止条件是因为
+		//最后一次只showArray, find不到next了, 函数会一直等待
+	{
+		showArray(arr, size);
+		findNext(arr, size);
+	}
+	showArray(arr, size);
+}
+
+
+void Recrusion(int begin, int end, int arr[], int size)
+{
+	if (begin == end)
+	{
+		showArray(arr, size);
+	}
+	else
+	{
+		for (int i = begin; i <= end; ++i)
+		{
+			swap(&arr[i], &arr[begin]);
+			Recrusion(begin + 1, end, arr, size);
+			swap(&arr[i], &arr[begin]);
+		}
+	}
+}
+void Permutation_recrusion(int arr[], int size)
+{
+	Recrusion(0, size - 1, arr, size);
+}
+
 
 int main(void)
 {
-	int index;
+	int size;
 	printf("你想进行几个数的全排列: ");
-	scanf("%d", &index);
+	scanf("%d", &size);
 
-	int *arr = malloc(index * sizeof(int));
+	int *arr = malloc(size * sizeof(int));
 
-	for (int cnt=1, *parr=arr; parr < arr + index; ++parr,++cnt)
+	for (int cnt=1, *parr=arr; parr < arr + size; ++parr,++cnt)
 		//设置初始的序列 (123456789)
 	{
 		*parr = cnt;
 	}
 
-	for (int i = 0; i < Fact(index)-1; ++i)
-		//这里用阶乘-1作为循环终止条件是因为
-		//最后一次只showArray, find不到next了, 函数会一直等待
-	{
-		showArray(arr, index);
-		findNext(arr, index);
-	}
-	showArray(arr, index);
+	/*全排列生成算法一: 数论中的4步走(字典序)*/
+	Permutation_4process(arr, size);
+
+	/*全排列生成算法二: 递归(非字典序)*/
+	Permutation_recrusion(arr, size);
+
 
 	free(arr);
 	system("pause");
