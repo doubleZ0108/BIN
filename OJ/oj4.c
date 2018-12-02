@@ -30,7 +30,10 @@ int GCD_subtraction(int m, int n)
 {
 	while (m != n)
 	{
-		//max(m, n) = max(m, n) - min(m, n);			//Q: 问号表达式为什么不能作为左值
+		//max(m, n) = max(m, n) - min(m, n);			
+			//Q: 问号表达式为什么不能作为左值?
+			//A: 问号表达式最后返回的是一个值, 不是一个对象
+
 		if (m > n)
 		{
 			m = m - n;
