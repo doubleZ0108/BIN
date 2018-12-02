@@ -5,31 +5,54 @@ Q: "求两个数的 最大公约数 和 最小公倍数"
 #include <stdio.h>
 #include <stdlib.h>
 
-long long GCD(long m, long n)
+int GCD_division(int m, int n)
+//辗转相除法
 {
-	if (m%n == 0) { return n; }
-	else
-	{
-		GCD(n, m%n);
-	}
-}
-int main(void)
-{
-	long long m, n;
-	scanf("%lld %lld", &m, &n);
-
-	long long buf;
-	long long savem = m, saven = n;
-
+	int buf;
 	while (buf = m % n)
 	{
 		m = n;
 		n = buf;
 	}
+	return n;
+}
+int GCD_recrusion(int m, int n)
+//递归法
+{
+	if (m%n == 0) { return n; }
+	else
+	{
+		GCD_recrusion(n, m%n);
+	}
+}
+int GCD_subtraction(int m, int n)
+//辗转相减法
+{
+	while (m != n)
+	{
+		//max(m, n) = max(m, n) - min(m, n);			//Q: 问号表达式为什么不能作为左值
+		if (m > n)
+		{
+			m = m - n;
+		}
+		else
+		{
+			n = n - m;
+		}
+	}
+	return m;
+}
 
-	printf("最大公约数是: %lld\n", n);
-	printf("递归解得最大公约数是: %lld\n", GCD(savem, saven));
-	printf("最小公倍数是: %lld\n", savem*saven / n);
+int main(void)
+{
+	int m, n;
+	scanf("%d %d", &m, &n);
+
+	printf("辗转相除法解得最大公约数是: %d\n", GCD_division(m,n));
+	printf("递归解得最大公约数是: %d\n", GCD_recrusion(m, n));
+	printf("辗转相减法解得最大公约数是: %d\n", GCD_subtraction(m,n));
+
+	printf("最小公倍数是: %d\n", m*n / GCD_division(m, n));
 
 	system("pause");
 	return 0;
