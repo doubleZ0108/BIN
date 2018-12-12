@@ -43,7 +43,20 @@ void Improve1()
 }
 void Improve2()
 {
-	
+	int x, y, z;
+	for (x = 0; x <= 20; ++x)
+	{
+		for (y = 0; y <= 33; ++y)
+		{
+			z = 100 - x - y;		//已经明确总数了, 可以减少一层循环了
+
+			if (z % 3 == 0 && 5 * x + 3 * y + z / 3 == 100)
+				//此时就还要判断z是否是3的倍数
+			{
+				printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+			}
+		}
+	}
 }
 
 int main(void)
