@@ -26,16 +26,36 @@ void Normal()
 }
 void Improve1()
 {
-
+	int x, y, z;
+	for (x = 0; x <= 20; ++x)
+	{
+		for (y = 0; y <= 33; ++y)
+		{
+			for (z = 0; z <= 300; z+=3)
+			{
+				if (x + y + z == 100 && 5 * x + 3 * y + z / 3 == 100)
+				{
+					printf("¼¦ÎÌ%d£¬¼¦Ä¸%d£¬¼¦³û%d\n", x, y, z);
+				}
+			}
+		}
+	}
 }
 void Improve2()
 {
-
+	
 }
+
 int main(void)
 {
+	printf("normal: \n");
 	Normal();
 
+	printf("improve1: \n");
+	Improve1();
+
+	printf("improve2: \n");
+	Improve2();
 
 	system("pause");
 	return 0;
