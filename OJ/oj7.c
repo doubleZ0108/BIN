@@ -6,10 +6,14 @@ tips: 其中鸡雏只能三个三个买
 #define _CRTSECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+#define MaxSize 10000
 
 void Normal()
 {
 	int x, y, z;
+	int cnt = 0;
 	for (x = 0; x <= 20; ++x)
 	{
 		for (y = 0; y <= 33; ++y)
@@ -18,7 +22,8 @@ void Normal()
 			{
 				if (z % 3 == 0 && x + y + z == 100 && 5 * x + 3 * y + z / 3 == 100)
 				{
-					printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+					//printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+					++cnt;
 				}
 			}
 		}
@@ -27,6 +32,7 @@ void Normal()
 void Improve1()
 {
 	int x, y, z;
+	int cnt = 0;
 	for (x = 0; x <= 20; ++x)
 	{
 		for (y = 0; y <= 33; ++y)
@@ -35,7 +41,8 @@ void Improve1()
 			{
 				if (x + y + z == 100 && 5 * x + 3 * y + z / 3 == 100)
 				{
-					printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+					//printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+					++cnt;
 				}
 			}
 		}
@@ -44,6 +51,7 @@ void Improve1()
 void Improve2()
 {
 	int x, y, z;
+	int cnt = 0;
 	for (x = 0; x <= 20; ++x)
 	{
 		for (y = 0; y <= 33; ++y)
@@ -53,7 +61,8 @@ void Improve2()
 			if (z % 3 == 0 && 5 * x + 3 * y + z / 3 == 100)
 				//此时就还要判断z是否是3的倍数
 			{
-				printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+				//printf("鸡翁%d，鸡母%d，鸡雏%d\n", x, y, z);
+				++cnt;
 			}
 		}
 	}
@@ -61,14 +70,41 @@ void Improve2()
 
 int main(void)
 {
-	printf("normal: \n");
-	Normal();
+	clock_t start, end;
+	double duration;
 
-	printf("improve1: \n");
-	Improve1();
+	start = clock();
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		//printf("normal: \n");
+		Normal();
+	}
+	end = clock();
+	duration = (double)(end - start) / CLK_TCK;
+	printf("normal: %f\n", duration);
 
-	printf("improve2: \n");
-	Improve2();
+
+	start = clock();
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		//printf("improve1: \n");
+		Improve1();
+	}
+	end = clock();
+	duration = (double)(end - start) / CLK_TCK;
+	printf("improve1: %f\n", duration);
+
+
+	start = clock();
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		//printf("improve2: \n");
+		Improve2();
+	}
+	end = clock();
+	duration = (double)(end - start) / CLK_TCK;
+	printf("improve2: %f\n", duration);
+
 
 	system("pause");
 	return 0;
