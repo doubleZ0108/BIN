@@ -1,3 +1,6 @@
+/*
+STL --- copy()å°†ä¸€ä¸ªå®¹å™¨çš„å†…å®¹å¤åˆ¶åˆ°å¦ä¸€ä¸ªé‡Œ & è¾“å‡ºåˆ°æ§åˆ¶å°
+*/
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -12,19 +15,19 @@ int main(void)
 
 	vector<int> iVec(size);
 	copy(arr, arr + size, iVec.begin());
-	//copyÖ»¸ºÔğ¸´ÖÆ, ²»¸ºÔğ¿ª±Ù¿Õ¼ä, ËùÒÔÒªÈËÎªµÄ±£Ö¤¿Õ¼ä×ã¹»´ó
+	//copyåªè´Ÿè´£å¤åˆ¶, ä¸è´Ÿè´£å¼€è¾Ÿç©ºé—´, æ‰€ä»¥è¦äººä¸ºçš„ä¿è¯ç©ºé—´è¶³å¤Ÿå¤§
 
 	list<int> iList(arr, arr + size);
 
-	cout << "¶Ôarrµ÷ÓÃcopy()Êä³ö: ";
+	cout << "å¯¹arrè°ƒç”¨copy()è¾“å‡º: ";
 	copy(arr, arr + size, ostream_iterator<int>(cout, " "));
 	cout << endl;
 
-	cout << "¶Ôvectorµ÷ÓÃcopy()Êä³ö: ";
+	cout << "å¯¹vectorè°ƒç”¨copy()è¾“å‡º: ";
 	copy(iVec.begin(), iVec.end(), ostream_iterator<int>(cout, " "));
 	cout << endl;
 
-	cout << "¶Ôlistµ÷ÓÃcopy()Êä³ö: ";
+	cout << "å¯¹listè°ƒç”¨copy()è¾“å‡º: ";
 	copy(iList.begin(), iList.end(), ostream_iterator<int>(cout, " "));
 	cout << endl;
 
