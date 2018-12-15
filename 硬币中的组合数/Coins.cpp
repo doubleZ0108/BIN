@@ -5,6 +5,10 @@
 * 人民币有六种面额的硬币，分别是1分、2分、5分、1角、5角、1元。
 * 美元有六种面额的硬币，分别是1美分、5美分、10美分、25美分，50美分、1美元。
 * 欧元有八种面额的硬币，分别是 1欧分、2欧分、5欧分、10欧分、20欧分、50欧分、1欧元和2欧元。
+*
+*
+* 参考资源:
+*		https://www.cnblogs.com/python27/archive/2013/09/05/3303721.html
 */
 #include <iostream>
 #include <cstdlib>
@@ -13,7 +17,7 @@
 #include <iomanip>
 using namespace std;
 
-void Combination_Yuan(const vector<int> &coins, vector<vector<int> > &result, const int amount=1000)
+void Combination(const vector<int> &coins, vector<vector<int> > &result, const int amount=1000)
 {
 	//把0种硬币组成任意金额的位置置为0
 	for (int sum = 0; sum <= amount; ++sum)
@@ -37,7 +41,8 @@ void Combination_Yuan(const vector<int> &coins, vector<vector<int> > &result, co
 		}
 	}
 }
-void showConbination(const int kinds, const vector<vector<int> >&result, const int amount=1000)
+void showConbination(const vector<vector<int> >&Yuan, const vector<vector<int> >&Dollar
+	, const vector < vector<int >> &Euro, const int amount = 1000)
 {
 	cout << setw(10) << "amount"
 		<< setw(10) << "Yuan"
@@ -47,21 +52,34 @@ void showConbination(const int kinds, const vector<vector<int> >&result, const i
 	for (int sum = 1; sum <= amount; ++sum)
 	{
 		cout << setw(10) << sum;
-		cout << setw(10) << result[kinds][sum] << endl;
+		cout << setw(10) << Yuan[Yuan.size()-1][sum];
+		cout << setw(10) << Dollar[Dollar.size()-1][sum];
+		cout << setw(10) << Euro[Euro.size()-1][sum];
+		cout << endl;
 	}
-	
 }
+
 int main(void)
 {
-	int kinds, amount;
-	kinds = 6; amount = 1000;
+	const int amount = 1000;
 
 	vector<int> Yuan = { 1,2,5,10,50,100 };
-	vector<vector<int> >ComYuan(kinds+1, vector<int>(amount+1, 0));	//增加0种硬币的情况 和 0元钱的情况
-	Combination_Yuan(Yuan, ComYuan);
-	//cout << ComYuan[kinds][amount] << endl;
-	showConbination(kinds, ComYuan);
+	vector<vector<int> >ComYuan(Yuan.size()+1, vector<int>(amount+1, 0));	//增加0种硬币的情况 和 0元钱的情况
+	Combination(Yuan, ComYuan);
+	//cout << ComYuan[Yuan.size()][amount] << endl;
 	
+	vector<int> Dollar = { 1,5,10,25,50,100 };
+	vector<vector<int> > ComDollar(Dollar.size() + 1, vector<int>(amount + 1, 0));
+	Combination(Dollar, ComDollar);
+	//cout << ComDollar[Dollar.size()][amount] << endl;
+
+	vector<int> Euro = { 1,2,5,10,20,50,100,200 };
+	vector<vector<int> > ComEuro(Euro.size() + 1, vector<int>(amount + 1, 0));
+	Combination(Euro, ComEuro);
+	//cout << ComEuro[Euro.size()][amount] << endl;
+
+	showConbination(ComYuan, ComDollar, ComEuro);
+
 	system("pause");
 	return 0;
 }
