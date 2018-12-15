@@ -36,7 +36,8 @@ void Combination(const vector<int> &coins, vector<vector<int> > &result, const i
 		{
 			for (int k = 0; k <= sum / coins[i-1]; ++k)
 			{
-				result[i][sum] += result[i - 1][sum - k * coins[i-1]];
+				result[i][sum] += result[i - 1][sum - k * coins[i-1]];	
+					//conins的i-1位置标识着当前研究的硬币总种类的最后一种
 			}
 		}
 	}
