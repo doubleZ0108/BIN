@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double Combination_Yuan(int amount)
+int Combination_Yuan(int amount)
 {
-	double cnt = 0;
+	int cnt = 0;
 	for (int a1 = 0; a1 <= amount / 1; ++a1)
 	{
 		for (int a2 = 0; a2 <= amount / 2; ++a2)
@@ -28,9 +28,9 @@ double Combination_Yuan(int amount)
 	}
 	return cnt;
 }
-double Combination_Dollar(int amount)
+int Combination_Dollar(int amount)
 {
-	double cnt = 0;
+	int cnt = 0;
 	for (int a1 = 0; a1 <= amount / 1; ++a1)
 	{
 		for (int a2 = 0; a2 <= amount / 5; ++a2)
@@ -55,9 +55,9 @@ double Combination_Dollar(int amount)
 	}
 	return cnt;
 }
-double Combination_Euro(int amount)
+int Combination_Euro(int amount)
 {
-	double cnt = 0;
+	int cnt = 0;
 	for (int a1 = 0; a1 <= amount / 1; ++a1)
 	{
 		for (int a2 = 0; a2 <= amount / 2; ++a2)
@@ -89,14 +89,14 @@ double Combination_Euro(int amount)
 	return cnt;
 }
 
-double main(void)
+int main(void)
 {
 	printf("三种货币（人民币、美元、欧元）中硬币构成各自货币里10元的组合数\n\n");
 	printf("%10s %10s %10s %10s\n", "amount", "Yuan", "Dollar", "Euro");
 
 	for (int i = 0; i <= 1000; ++i)
 	{
-		printf("%10d %10.0f %10.0f %10.0f\n",i,
+		printf("%10d %10d %10d %10d\n",i,
 			Combination_Yuan(i), Combination_Dollar(i), Combination_Euro(i));
 	}
 
