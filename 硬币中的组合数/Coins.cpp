@@ -78,9 +78,9 @@ int main(void)
 	Combination(Euro, ComEuro);
 	//cout << ComEuro[Euro.size()][amount] << endl;
 
+	cout << "三种货币（人民币、美元、欧元）中硬币构成各自货币里10元的组合数" << endl << endl;
 	showConbination(ComYuan, ComDollar, ComEuro);
 
 	system("pause");
 	return 0;
 }
-
