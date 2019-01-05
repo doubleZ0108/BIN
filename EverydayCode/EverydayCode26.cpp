@@ -84,6 +84,26 @@ int main(void)
 		cout << "The position is " << BinarySearch(sequence, key, 0, MaxSize - 1) << endl;
 	}
 
+	/*binary_search()只能判断是否有该元素*/
+	cout << endl << "The STL version: " << endl;
+	if (!binary_search(sequence.begin(),sequence.end(),key))
+	{
+		cout << "No such item in the sequence!" << endl;
+	}
+	else
+	{
+		cout << "The item is in the sequence!" << endl;
+	}
+	/*upper_bound()返回第一个 大于等于key 的迭代器*/
+	if (upper_bound(sequence.begin(), sequence.end(), key) == sequence.end())
+	{
+		cout << "No upper or equal item in the sequence!" << endl;
+	}
+	else
+	{
+		cout << "The first position that upper or equal to the key-value is " << upper_bound(sequence.begin(), sequence.end(), key) - sequence.begin() << endl;
+	}
+
 	system("pause");
 	return 0;
 }
