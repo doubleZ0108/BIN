@@ -23,7 +23,7 @@ int main(void)
 	{
 		S.insert(rand());
 	}
-	
+
 	for_each(S.begin(), S.end(), [](int n) {cout << n << ' '; });
 	cout << endl;
 
@@ -33,7 +33,7 @@ int main(void)
 	{
 		cout << "set insert success!" << endl;
 	}
-	else 
+	else
 	{
 		cout << "set insert failed!" << endl;
 	}
@@ -41,6 +41,22 @@ int main(void)
 	for_each(S.begin(), S.end(), [](int n) {cout << n << ' '; });
 	cout << endl;
 
+	/*set能包含的最大元素数量*/
+	cout <<"max size of set is " << S.max_size() << endl;
+
+	/*
+	* equal_range()
+	* 返回一对定位器
+	* 分别表示第一个大于或等于给定关键值的元素 和 第一个大于给定关键值的元素
+	* 这个返回值是一个pair类型
+	* 如果这一对定位器中哪个返回失败
+	* 就会等于end()的值。
+	*/
+	pair<set<int>::const_iterator, set<int>::const_iterator> pr;
+	pr = S.equal_range(5000);
+	cout << "第一个大于等于5000的元素是: " << *pr.first << endl;
+	cout << "第一个大于5000的元素是: " << *pr.second << endl;
+	
 	system("pause");
 	return 0;
 }
