@@ -68,6 +68,7 @@ void QuickSort(vector<NODE> &people, int low, int high)
 	QuickSort(people, savei, low - 1);
 	QuickSort(people, low + 1, savej);
 }
+
 void InsertSort(vector<NODE> &people)
 {
 	for (int i = 1; i < people.size(); ++i)
@@ -75,10 +76,16 @@ void InsertSort(vector<NODE> &people)
 		NODE temp = people[i];
 		int j = i - 1;
 
-		while (temp.W > people[j].W)
+		while (temp.W >= people[j].W)
 		{
-			people[j + 1] = people[j];
-			--j;
+			//关键点是当W相等的时候编号小的优先
+			if (temp.W == people[j].W && temp.name<people[j].name)
+			{
+				people[j + 1] = people[j];
+				--j;
+			}
+			else if (temp.W > people[j].W) { people[j + 1] = people[j]; --j;}
+			else { break; }
 		}
 		if (j != i - 1)
 		{
