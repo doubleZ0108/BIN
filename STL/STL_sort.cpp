@@ -72,7 +72,39 @@ void test_StableSort(vector<myClass> sequence)
 	myStableSort(sequence);
 }
 
+void test_PartialSort(vector<myClass> sequence)
+{
+	cout << "Before partial_sort(): ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
 
+	//找出sequence中最小的五个元素, 使用的比较函数是myClass中重载的 operator<
+	partial_sort(sequence.begin(), sequence.begin() + 5, sequence.end());
+
+	cout << "After partial_sort(5): ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+}
+
+void test_PartialSortCopy(vector<myClass> sequence)
+{
+	vector<myClass> fresh(MaxSize / 2);
+
+	cout << "Before partial_sort_copy(), sequence: ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+
+	//找到fresh容器大小 最小的几个数 放到fresh里
+	partial_sort_copy(sequence.begin(), sequence.end(), fresh.begin(), fresh.end());
+
+	cout << "After partial_sort_copy(), sequence: ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+
+	cout << "After partial_sort_copy(), fresh: ";
+	for_each(fresh.begin(), fresh.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+}
 
 int main(void)
 {
