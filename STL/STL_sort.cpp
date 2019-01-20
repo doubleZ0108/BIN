@@ -1,5 +1,12 @@
 /*
 STL --- sort
+https://blog.csdn.net/huoxingrenhdh/article/details/77126954
+
+·若需对vector, string, deque, 或 array容器进行全排序，你可选择sort或stable_sort；
+·若只需对vector, string, deque, 或 array容器中取得top n的元素，部分排序partial_sort是首选.
+·若对于vector, string, deque, 或array容器，你需要找到第n个位置的元素或者你需要得到top n且不关系top n中的内部顺序，nth_element是最理想的；
+·若你需要从标准序列容器或者array中把满足某个条件或者不满足某个条件的元素分开，你最好使用partition或stable_partition；
+·若使用的list容器，你可以直接使用partition和stable_partition算法，你可以使用list::sort代替sort和stable_sort排序。若你需要得到partial_sort或nth_element的排序效果，你必须间接使用。
 */
 #include <iostream>
 #include <cstdlib>
@@ -148,36 +155,36 @@ int main(void)
 	}
 
 	/*sort对自定义的类做排序的两种方法*/
-	//sort采用的是成熟的"快速排序算法"
-	//(目前大部分STL版本已经不是采用简单的快速排序，而是结合内插排序算法)。
+		//sort采用的是成熟的"快速排序算法"
+		//(目前大部分STL版本已经不是采用简单的快速排序，而是结合内插排序算法)。
 	//Sort_for_myClass(sequence);
 
 	/*stable_sort STL稳定的排算法序*/
-	//stable_sort采用的是"归并排序"
+		//stable_sort采用的是"归并排序"
 	//test_StableSort(sequence);	
 
 	/*partial_sort 对局部进行排序*/
-	//partial_sort采用的堆排序(heapsort)
-	//如果希望用partial_sort来实现全排序，只要让middle=last就可以了
-	//可以用在 大数据量下找最小的几个数
+		//partial_sort采用的堆排序(heapsort)
+		//如果希望用partial_sort来实现全排序，只要让middle=last就可以了
+		//可以用在 大数据量下找最小的几个数
 	//test_PartialSort(sequence);
 
 	/*partial_sort_copy 对新容器大小的数据量进行排序*/
-	//partial_sort_copy其实是copy和partial_sort的组合
-	//被排序(被复制)的数量是[first, last)和[result_first, result_last)中区间较小的那个
-	//如果[result_first, result_last)区间大于[first, last)区间
-	//那么partial_sort相当于copy和sort的组合
+		//partial_sort_copy其实是copy和partial_sort的组合
+		//被排序(被复制)的数量是[first, last)和[result_first, result_last)中区间较小的那个
+		//如果[result_first, result_last)区间大于[first, last)区间
+		//那么partial_sort相当于copy和sort的组合
 	//test_PartialSortCopy(sequence);
 
 	/*nth_element 只找出第n个最小的数*/
-	//班上有10个学生，我想知道分数排在倒数第4名的学生。
-	//可以用sort排好序，然后取第4位（因为是由小到大排)
-	//更聪明的是用partial_sort, 只排前4位，然后得到第4位。
-	//其实这样还是浪费，因为前两位你根本没有必要排序，此时可以用nth_element
+		//班上有10个学生，我想知道分数排在倒数第4名的学生。
+		//可以用sort排好序，然后取第4位（因为是由小到大排)
+		//更聪明的是用partial_sort, 只排前4位，然后得到第4位。
+		//其实这样还是浪费，因为前两位你根本没有必要排序，此时可以用nth_element
 	//test_nthElement(sequence);
 
 	/*partition 将序列依照某个标准划分成两部分*/
-	//可以应用在 将班级同学成绩按照及格与否分成两部分
+		//可以应用在 将班级同学成绩按照及格与否分成两部分
 	//test_Partition(sequence);
 
 	system("pause");
