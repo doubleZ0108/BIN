@@ -85,7 +85,6 @@ void test_PartialSort(vector<myClass> sequence)
 	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
 	cout << endl;
 }
-
 void test_PartialSortCopy(vector<myClass> sequence)
 {
 	vector<myClass> fresh(MaxSize / 2);
@@ -103,6 +102,22 @@ void test_PartialSortCopy(vector<myClass> sequence)
 
 	cout << "After partial_sort_copy(), fresh: ";
 	for_each(fresh.begin(), fresh.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+}
+
+void test_nthElement(vector<myClass> sequence)
+{
+	cout << "Before nth_element(): ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+
+	//注意begin()是第一个元素, 相当于begin()+0
+	//所以想找到第四个参数应该是 begin()+3
+	nth_element(sequence.begin(), sequence.begin() + 3, sequence.end());
+	cout << "The 4th element is:\t" << *(sequence.begin() + 3) << endl;
+
+	cout << "After nth_element(): ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
 	cout << endl;
 }
 
@@ -137,6 +152,13 @@ int main(void)
 	//如果[result_first, result_last)区间大于[first, last)区间
 	//那么partial_sort相当于copy和sort的组合
 	//test_PartialSortCopy(sequence);
+
+	/*nth_element 只找出第n个最小的数*/
+	//班上有10个学生，我想知道分数排在倒数第4名的学生。
+	//可以用sort排好序，然后取第4位（因为是由小到大排)
+	//更聪明的是用partial_sort, 只排前4位，然后得到第4位。
+	//其实这样还是浪费，因为前两位你根本没有必要排序，此时可以用nth_element
+	test_nthElement(sequence);
 
 	system("pause");
 	return 0;
