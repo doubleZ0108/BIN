@@ -121,6 +121,22 @@ void test_nthElement(vector<myClass> sequence)
 	cout << endl;
 }
 
+void test_Partition(vector<myClass> sequence)
+{
+	myClass pivot(6, 6);
+	cout << "Before partition(): ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+
+	/*稳定的划分可以保证原序列中的元素在划分后相对次序不变*/
+	//partition(sequence.begin(), sequence.end(), bind2nd(less<myClass>(), pivot));
+	stable_partition(sequence.begin(), sequence.end(), bind2nd(less<myClass>(), pivot));
+
+	cout << "After partition(): ";
+	for_each(sequence.begin(), sequence.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+}
+
 int main(void)
 {
 	srand(time(NULL));
@@ -158,7 +174,11 @@ int main(void)
 	//可以用sort排好序，然后取第4位（因为是由小到大排)
 	//更聪明的是用partial_sort, 只排前4位，然后得到第4位。
 	//其实这样还是浪费，因为前两位你根本没有必要排序，此时可以用nth_element
-	test_nthElement(sequence);
+	//test_nthElement(sequence);
+
+	/*partition 将序列依照某个标准划分成两部分*/
+	//可以应用在 将班级同学成绩按照及格与否分成两部分
+	//test_Partition(sequence);
 
 	system("pause");
 	return 0;
