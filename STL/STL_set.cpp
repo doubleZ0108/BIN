@@ -12,6 +12,36 @@ using namespace std;
 
 #define MaxSize 10
 
+class myClass
+{
+	friend ostream &operator<<(ostream &os, const myClass &buf);
+
+public:
+	int x, y;
+	myClass() = default;
+	myClass(int bufx,int bufy):x(bufx),y(bufy){}
+
+	bool operator<(const myClass &buf)const
+	{
+		return (this->x < buf.x);
+	}
+};
+
+void Set_for_myClass(void)
+{
+	srand(time(NULL));
+
+	set<myClass> myset;
+
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		myset.insert(myClass(rand(), rand()));
+	}
+
+	for_each(myset.begin(), myset.end(), [](myClass n) {cout << n << ' '; });
+	cout << endl;
+}
+
 int main(void)
 {
 	srand(time(NULL));
@@ -57,6 +87,15 @@ int main(void)
 	cout << "第一个大于等于5000的元素是: " << *pr.first << endl;
 	cout << "第一个大于5000的元素是: " << *pr.second << endl;
 	
+	/*set用于自定义类*/
+	Set_for_myClass();
+
 	system("pause");
 	return 0;
+}
+
+ostream & operator<<(ostream & os, const myClass & buf)
+{
+	os << '(' << buf.x << ',' << buf.y << ')';
+	return os;
 }
