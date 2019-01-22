@@ -1,9 +1,9 @@
 /*
 STL --- for_each()
-	for_each(InputIterator first, InputIterator last, Function functor);
-	1.对first~last中的每个元素进行操作
-	2.仿函数对每个元素进行操作
-	3.时间复杂度是O(n)
+for_each(InputIterator first, InputIterator last, Function functor);
+1.对first~last中的每个元素进行操作
+2.仿函数对每个元素进行操作
+3.时间复杂度是O(n)
 */
 #include <iostream>
 #include <cstdlib>
@@ -43,6 +43,8 @@ int main(void)
 
 	/*使用lambda表达式*/
 	for_each(ivec.begin(), ivec.end(), [](int i) {cout << i << ' '; }), cout << endl;
+	//注意如果最后一个元素想单独访问(容器的end是最后一个元素的后一个位置)
+	cout << *(ivec.end() - 1);
 
 	system("pause");
 	return 0;
