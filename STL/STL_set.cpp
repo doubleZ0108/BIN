@@ -31,6 +31,7 @@ void Set_for_myClass(void)
 {
 	srand(time(NULL));
 
+	//类必须重载 < 运算符
 	set<myClass> myset;
 
 	for (int i = 0; i < MaxSize; ++i)
