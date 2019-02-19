@@ -5,17 +5,157 @@
 #include<time.h>
 #include <tchar.h>
 
-void setColor(int color)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}
-/*================= article ======================*/
+HANDLE hConsole;
 #define MaxSize 5
+#define stoptimeshortshort 50
 #define stoptimeshort  100
 #define stoptimelong   500
 #define stoptimelonglong   2000
 
+void setColor(int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
 
+/*================= hello world ======================*/
+void gotoxy(int x, int y)
+{
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(hConsole, coord);
+}
+
+void First_HelloWorld(void)
+{
+	char strhelloworld[13][6] = { { 208,161 },{ 199,201 },{ 193,225 },{ 231,231 },{ 195,212 },{ 196,227 },{ 191,201 },{ 176,174 },{ 181,196 },"160cm",{ 208,161 },{ 194,220 },{ 192,242 }, };
+	printf("%s", "        ");
+	for (int i = 0; i < 13; ++i)
+	{
+		Sleep(stoptimelong);
+		printf("%s", strhelloworld[i]);
+		Sleep(stoptimeshort);
+	}
+	printf("\n");
+	system("cls");
+
+	char happybirthday[13] = { 'h','a','p','p','y','b','i','r','t','h','d','a','y' };
+
+	int i, j, k;
+	int now = 0;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	gotoxy(4, 6);
+	for (i = 0; i<11; i++)
+	{
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	for (i = 0; i<12; i++)
+	{
+		gotoxy(9, 7 + i);
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	gotoxy(4, 18);
+	for (i = 0; i<11; i++)
+	{
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	gotoxy(36, 10);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(25, 10);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(47, 10);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(34, 8);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(38, 8);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(30, 7);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(42, 7);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(27, 8);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(45, 8);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(25, 11);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(47, 11);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	for (i = 1, j = 1; i<6, j<6; i++, j++)
+	{
+		gotoxy(25 + i, 11 + j);
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	gotoxy(32, 17);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(34, 18);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	for (i = 1, j = 1; i<6, j<6; i++, j++)
+	{
+		gotoxy(47 - i, 11 + j);
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	gotoxy(40, 17);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(38, 18);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(36, 19);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	for (i = 0; i<11; i++)
+	{
+		gotoxy(59, 6 + i);
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	gotoxy(61, 17);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	for (i = 0; i<11; i++)
+	{
+		gotoxy(63 + i, 18);
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+	gotoxy(74, 17);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	gotoxy(76, 16);
+	printf("%c", happybirthday[now % 10]); now++;
+	Sleep(stoptimeshortshort);
+	for (i = 0; i<10; i++)
+	{
+		gotoxy(76, 15 - i);
+		printf("%c", happybirthday[now % 10]); now++;
+		Sleep(stoptimeshortshort);
+	}
+
+	Sleep(stoptimelonglong);
+	system("cls");
+}
+
+/*================= article ======================*/
 void OutputMess(char *name, char (*str)[3], int size)
 {
 	setColor(name[1] == 'K' ? 6 : 3);
@@ -29,25 +169,14 @@ void OutputMess(char *name, char (*str)[3], int size)
 	}
 	printf("\n");
 }
+
 void Second_article(void)
-{
-	//小巧玲珑迷你可爱的160cm小萝莉
-	char strhelloworld[13][6] = { { 208,161 },{ 199,201 },{ 193,225 },{ 231,231 },{ 195,212 },{ 196,227 },{ 191,201 },{ 176,174 },{ 181,196 },"160cm",{ 208,161 },{ 194,220 },{ 192,242 }, };
-	printf("%s", "        ");
-	for (int i = 0; i < 13; ++i)
-	{
-		Sleep(stoptimelong);
-		printf("%s", strhelloworld[i]);
-		Sleep(stoptimeshort);
-	}
-	printf("\n");
-	system("cls");
-	
+{	
 	char time[9][17] = { "2018-09-10 09:45","2018-10-26 09:05","2018-11-11 00:05","2018-11-11 18:08",
 		"2018-11-23 15:31","2018-12-24 22:31","2019-01-01 00:00","2019-01-08 03:25","2019-02-12 18:14", };
 	char *doubleZ = "[double Z]", *Kerr = "[Kerr]";
 
-	/*for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 9; ++i)
 	{
 		setColor(7);
 		system("cls");
@@ -187,7 +316,22 @@ void Second_article(void)
 
 		Sleep(stoptimelonglong);
 
-	}*/
+	}
+
+	
+	system("cls");
+	setColor(5);
+	char str1[MaxSize][3] = { { 207,224 },{ 203,198 },{ 181,196 },{ 193,233 },{ 187,234 }, };
+	printf("%s", "        ");
+	for (int i = 0; i < 5; ++i)
+	{
+		Sleep(stoptimelong);
+		printf("%s", str1[i]);
+		Sleep(stoptimeshort);
+	}
+	printf("\n");
+
+	Sleep(stoptimelonglong);
 }
 
 /*================= floatHeart ======================*/
@@ -259,20 +403,10 @@ int main(void)
 {
 	system("title Happy Birthday zyT");
 
+	First_HelloWorld();
 	Second_article();
-	//Third_floatHeart();
+	Third_floatHeart();
 
-	////相似的灵魂
-	//setColor(5);
-	//char str1[MaxSize][3] = { { 207,224 },{ 203,198 },{ 181,196 },{ 193,233 },{ 187,234 }, };
-	//printf("%s", "        ");
-	//for (int i = 0; i < 5; ++i)
-	//{
-	//	Sleep(stoptimelong);
-	//	printf("%s", str1[i]);
-	//	Sleep(stoptimeshort);
-	//}
-	//printf("\n");
 
 	system("pause");
 	return 0;
