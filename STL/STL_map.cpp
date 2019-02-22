@@ -3,6 +3,7 @@ STL --- map
 */
 #include <iostream>
 #include <cstdlib>
+#include <string>
 #include <algorithm>
 #include <vector>
 #include <map>
@@ -13,15 +14,34 @@ int main(void)
 {
 	map<int, string> mymap;
 
-	/*æ’å…¥å…ƒç´ */
-		//æ€§èƒ½ä¸å¥½, ä¼šå…ˆå»æŸ¥æ‰¾æ‹¬å·å†…çš„é”®å€¼æ˜¯å¦å­˜åœ¨,
-		//å¦‚æœä¸å­˜åœ¨ä¼šå…ˆåˆ›å»ºç©ºå¯¹è±¡å†èµ‹å€¼(ç±»å‹ä¸ºå¯¹è±¡ç±»å‹æ—¶æ•ˆæœå¾ˆç³Ÿ)
+	/*²åÈëÔªËØ*/
+		//ĞÔÄÜ²»ºÃ, »áÏÈÈ¥²éÕÒÀ¨ºÅÄÚµÄ¼üÖµÊÇ·ñ´æÔÚ,
+		//Èç¹û²»´æÔÚ»áÏÈ´´½¨¿Õ¶ÔÏóÔÙ¸³Öµ(ÀàĞÍÎª¶ÔÏóÀàĞÍÊ±Ğ§¹ûºÜÔã)
 		mymap[1] = "One";
 		mymap[2] = "Two";
 
-		//é¿å…å¼€é”€
+		//±ÜÃâ¿ªÏú
 		mymap.insert(pair<int,string>(3, "Three"));
 		mymap.insert(map<int, string>::value_type(4, "Four"));
+
+
+	/*»ñµÃmapÖĞµÄÔªËØ*/
+		//Ö»ÓĞµ±mapÖĞÓĞÕâ¸ö¼üÖµµÄÊ±ºòÕâÖÖ·½·¨²ÅÄÜ»ñÈ¡¸ÃÔªËØ
+		//Èç²»´æÔÚ»á×Ô¶¯´´½¨Ò»¸öÊµÀı,ÖµÎª³õÊ¼»¯Öµ
+		string tmpstr = mymap[0];
+
+
+	/*²éÑ¯Ä³¸ö¼üÖµÊÇ·ñ´æÔÚ*/
+		//find
+		int destKey = 2;
+		map<int, string>::iterator iter = mymap.find(destKey);
+		if (iter == mymap.end()) {
+			//Ã»ÕÒµ½
+		}
+		else {
+			cout << "¹Ø¼üÂëÊÇ" << iter->first << endl;
+			cout << "´æ´¢µÄÊı¾İÊÇ" << iter->second << endl;
+		}
 
 	system("pause");
 	return 0;
