@@ -1,5 +1,6 @@
 /*
 STL --- map
+	第一个参数类型([]内的东西)是key, 通过key找到第二个参数类型对象对应的值
 */
 #include <iostream>
 #include <cstdlib>
@@ -43,6 +44,12 @@ int main(void)
 			cout << "存储的数据是" << iter->second << endl;
 		}
 
+	/*删除元素*/
+		//通过key值删除该条元素
+		mymap.erase(1);
+		//通过迭代器删除
+		mymap.erase(iter);
+		
 	system("pause");
 	return 0;
 }
