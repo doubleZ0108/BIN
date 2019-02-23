@@ -43,6 +43,14 @@ int main(void)
 			cout << "关键码是" << iter->first << endl;
 			cout << "存储的数据是" << iter->second << endl;
 		}
+		//count
+		if (!mymap.count(destKey)) {
+			//没找到
+		}
+		else {
+			//找到了
+		}
+
 
 	/*删除元素*/
 		//通过key值删除该条元素
