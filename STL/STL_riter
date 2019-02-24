@@ -1,0 +1,9 @@
+vector<int> ivec(MaxSize);
+for (int i = 0; i < MaxSize; ++i) { ivec[i] = i; }
+
+//输出0~9
+for (auto iter = ivec.begin(); iter != ivec.end(); ++iter) { cout << *iter<< ' '; }
+cout << endl;
+
+//输出9~0
+for (auto iter = ivec.rbegin(); iter != ivec.rend(); ++iter) { cout << *iter << ' '; }
