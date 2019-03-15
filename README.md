@@ -2,8 +2,10 @@
 ###### 六级标题
 
 *斜体*
+
 **粗体**
-_下划线_
+
+
 ~~删除线~~
 
 ### 无序列表
@@ -41,6 +43,7 @@ int main(void)
   cout<<"Hello world!"<<endl;
   return 0;
 }
+
 ```
 
 ### 表格
@@ -62,12 +65,16 @@ B ---> C{判断逻辑}
 C ---> |one| D[item1]
 C ---> |two| E[item2]
 C ---> |three| F[item3]
+
 ```
 
 ### 目录结构(不是md语法)
 cmd切换到要生成目录结构的目录
-``` tree /f > list.txt ```
-> 切换盘符直接 ``` E: ```
-> 在该盘下切换要 ``` cd document\myfile ```
-> 返回主目录 ``` cd\ ```
-> 返回上级目录 ``` cd.. ```
+` tree /f > list.txt `
+> 切换盘符直接 ` E: `
+>
+> 在该盘下切换要 ` cd document\myfile `
+>
+> 返回主目录 ` cd\ `
+>
+> 返回上级目录 ` cd.. `
