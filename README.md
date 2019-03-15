@@ -57,16 +57,6 @@ int main(void)
   - [x] 已完成事项1
 - [ ] 代办项目1
 
-### 流程图
-```
-graph TD
-A[直角] ---> B(圆角)
-B ---> C{判断逻辑}
-C ---> |one| D[item1]
-C ---> |two| E[item2]
-C ---> |three| F[item3]
-
-```
 
 ### 目录结构(不是md语法)
 cmd切换到要生成目录结构的目录
