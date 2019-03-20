@@ -44,6 +44,9 @@ int main(void)
   return 0;
 }
 
+```javascript
+var my = 'hello world'
+this.setData({my : 'doubleZ'})
 ```
 
 ### 表格
