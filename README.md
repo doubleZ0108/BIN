@@ -35,7 +35,7 @@
 ![This is double Z](https://upload-images.jianshu.io/upload_images/12014150-b4ca3df27d59f42c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ### 代码高亮
-```
+```C++
 #include <iostream>
 using namespace std;
 int main(void)
