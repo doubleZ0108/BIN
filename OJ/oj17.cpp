@@ -24,13 +24,24 @@
 [3,2,4,1]重排->[1,2,3,4]->[1],[2,3,4]->[1],[2],[3,4]->[1],[2],[3],[4]。
 */
 
+
+/*
+算法一:
+    1 2 3 4 5
+    —————————
+      ———————
+        —————
+          ———
+
+    5一共被加了4次,4被加了4次，3-3次，2-2次，1-1次
+*/
 #include <iostream>
 #include <vector>
 #include <algorithm>
 using namespace std;
 int main(void)
 {
-    long long N;    cin>>N;
+    long long N;    cin>>N;                 //所有东西都要用long long存
     vector<int> arr(N);
     for(int i=0;i<N;++i){cin>>arr[i];}
      
@@ -45,3 +56,23 @@ int main(void)
     cout<<total<<endl;
     return 0;
 }
+
+
+/*
+算法二:
+    一步步模拟加进来的数的过程
+    先加入所有数的和, 抛去最小的数, 加入其它数的和, 再抛去次小的数....
+*/
+long long N, sum = 0;    cin >> N;
+vector<int> arr(N);
+for (long long i = 0; i<N; ++i) { cin >> arr[i]; sum += arr[i]; }
+
+sort(arr.begin(), arr.end());
+
+long long total = 0;
+for (long long i = 0; i<N - 1; ++i)
+{
+	total += sum;
+	sum -= arr[i];
+}
+cout << total << endl;
