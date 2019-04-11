@@ -40,16 +40,20 @@ int main(void)
     int k;    cin>>k;
      
     int low=0;
+    
+    //存储 - 有多少个
     for(int i=0;i<str.size();++i){if(str[i]=='-'){low++;}}
-    vector<string> svec(low+1, str);
+    
+    vector<string> svec(low+1, str);    //从0到low个, 要加一; 先全初始化为原字符串
      
+    //把low+1种可能的变形都提前存进来
     int cnt=0;
     for(int i=1;i<=low;++i)
     {
         cnt=0;
         for(int j=0;j<str.size();++j)
         {
-            if(svec[i][j]=='-')
+            if(svec[i][j]=='-')     //每次多把一个 - 变成 +
             {
                 ++cnt;
                 svec[i][j]='+';
@@ -58,6 +62,8 @@ int main(void)
         }
     }
      
+    
+    //寻找第一个满足条件的解输出
     int small,big;
    for(int i=0;i<low+1;++i)
    {
@@ -79,3 +85,34 @@ int main(void)
          
     return 0;
 }
+
+
+
+//未AC版本
+//只用一个字符串反复处理 (可能是什么地方没考虑全)
+int low,high;
+    long long cnt;
+     
+    long long loopNum=0;
+    bool flag;
+    while(true)
+    {
+        low=high=0;
+        cnt=0;
+        flag=false;
+             
+        for(int i=0;i<str.size();++i)
+        {
+            if(loopNum!=0 && !flag && str[i]=='-'){str[i]='+';flag=true;high++;}
+             
+            if(str[i]=='-')low++;
+            else high++;
+             
+            if(low>high){cnt++;}
+        }
+         
+        if(cnt<=k){break;}
+        loopNum++;
+    }
+     
+    cout<<loopNum<<endl;
