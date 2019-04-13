@@ -45,6 +45,36 @@ yyuahhy
 1
 */
 
+//备忘录算法, 读入数据时就提前把所有位置的结果存储下来
+#include <bits/stdc++.h>
+using namespace std;
+#define LL long long
+ 
+int main(void)
+{
+   LL n, m;    cin >> n >> m;    getchar();
+    vector<char> silk(n);
+    vector<int> dict(26, 0);
+    vector<LL> result(n);
+ 
+    int pos;
+    for (int i = 0; i < n; ++i) {
+        scanf("%c", &silk[i]);
+        pos = silk[i] - 'a';            //先全部算出来
+        dict[pos]++;
+        result[i] = dict[pos];
+    }
+     
+    LL now;
+    char ch;
+    while(m--)
+    {
+        scanf("%lld",&now);       
+        printf("%lld\n",result[now-1]);
+    }
+     
+    return 0;
+}
 
 
 
