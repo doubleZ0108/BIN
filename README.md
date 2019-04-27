@@ -81,6 +81,6 @@ cmd切换到要生成目录结构的目录
 > 返回上级目录 ` cd.. `
 
 
-我是华文彩云</font>
- <font color=red size=5>我是红色的字</font>
- <table><tr><td bgcolor=#FF4500>这里是背景色的使用</td></tr></table>
+<font face="STCAIYUN">我是华文彩云</font>   
+<font color=red size=5>我是红色的字</font>   
+<table><tr><td bgcolor=#FF4500>这里是背景色的使用</td></tr></table>   
