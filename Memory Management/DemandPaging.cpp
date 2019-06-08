@@ -20,7 +20,7 @@ typedef int BlockNum;	//块号
 /*返回[low, high]间的随机指令*/
 InstNum getRand(InstNum low, InstNum high)
 {
-	if (high - low == -1) { return high; }
+	if (high - low == -1) { return high; }		//消除作业中指令访问次序产生high比low小1的问题
 	return (rand() % (high - low + 1) + low);
 }
 
@@ -28,20 +28,23 @@ InstNum getRand(InstNum low, InstNum high)
 class Memory
 {
 private:
-	vector<PageNum> block;	//内存块
-	vector<bool> visited;	//是否执行过该指令
+	vector<PageNum> block;		//内存块
+	vector<bool> visited;		//是否执行过该指令
 	queue<BlockNum> LRU_Queue;	//最近最少使用队列
 
-	int runTime = 0, adjustTime = 0;					//运行次数, 调页次数
-	int restInst = TOTALNUM;								//剩余指令
-	void execute(string algorithm, InstNum aim);		//按照算法执行一条指令
+	int runTime = 0;					//运行次数
+	int adjustTime = 0;					//调页次数
+	int restInst = TOTALNUM;			//剩余未执行指令
+
+	void execute(string algorithm, InstNum aim);			//按照算法执行一条指令
 	PageNum adjust(string algorithm, BlockNum &pos);		//页面置换
-	void displayPosMess(InstNum aim) {
+
+	void displayPosMess(InstNum aim) {									//打印指令地址信息
 		cout << "物理地址为:" << setw(3)<<aim
 			 << ", 地址空间页号为:" <<setw(2)<< aim / 10
 			<< ", 页内第" << setw(2) << aim % 10 << "条指令.";
 	}
-	void displayLoadMess(PageNum fresh, BlockNum pos, bool flag) { 
+	void displayLoadMess(PageNum fresh, BlockNum pos, bool flag) {		//打印未发生调页的信息
 		cout << endl;
 		if (flag) {		//已经在内存块中
 			cout << fresh << "号页已经在内存中第" << pos << "号块中了, 未发生调页." << endl << endl;
@@ -50,7 +53,7 @@ private:
 			cout << fresh << "号页放在内存中第" << pos << "号块中, 未发生调页." << endl << endl;
 		}
 	}
-	void displayLoadMess(PageNum old, PageNum fresh, BlockNum pos) {
+	void displayLoadMess(PageNum old, PageNum fresh, BlockNum pos) {	//打印发生调页的信息
 		cout << "  || 调出内存中第" << setw(2)<<pos 
 			<< "块中第" <<setw(2)<< old 
 			<< "号页, 调入第" << setw(2) << fresh << "号页." << endl << endl;
@@ -60,8 +63,8 @@ public:
 	Memory() = default;
 	~Memory() = default;
 
-	void Init();
-	void Simulate(string algorithm, char type);	//按照算法和执行模式执行指令 
+	void Init();		//初始化内存
+	void Simulate(string algorithm, char type);			//按照算法和执行模式执行指令 
 
 	int getRunTime() { return this->runTime; }			//返回运行次数
 	int getAdjustTime() { return this->adjustTime; }	//返回调页次数
@@ -70,7 +73,6 @@ public:
 
 int main(void)
 {
-	
 	char method, type, operate;	//置换算法, 执行模式, 功能
 
 	do
@@ -115,15 +117,16 @@ int main(void)
 			}
 		} while (type != 'A' && type != 'a' && type != 'B' && type != 'b');
 
-		//TODO
-		Memory myMemory;		//创建内存对象
+		/*模拟*/
+		Memory myMemory;						//创建内存对象
 		myMemory.Init();						//初始化内存
 		srand((unsigned)time(NULL));			//获取随机数种子
 		myMemory.Simulate(algorithm, type);		//按照该算法和该执行模式进行模拟
 		
-		cout << algorithm<<"算法, "
-			<< (type == 'A' || type == 'a' ? "执行前%d条指令" : "执行完所有指令", TOTALNUM)
-			<< "模拟结果如下: " << endl;
+		cout << algorithm << "算法, ";
+		if (type == 'A' || type == 'a') { cout << "执行前" << TOTALNUM << "条指令"; }
+		else { cout << "执行完所有指令"; }
+		cout << "模拟结果如下: " << endl;
 		cout << "======================================" << endl
 			<< "共执行" << myMemory.getRunTime() << "条指令" << endl
 			<< "调页次数为" << myMemory.getAdjustTime() << "次" << endl
@@ -160,10 +163,15 @@ int main(void)
 		<< "* 请求调页存储管理方式模拟结束 * " << endl
 		<< "********************************" << endl
 		<< endl;
+
 	system("pause");
 	return 0;
 }
 
+/* 执行一条指令
+ * @param {置换算法} algorithm
+ * @param {待执行指令} aim
+*/
 void Memory::execute(string algorithm, InstNum aim)
 {
 	this->runTime++;		//更新运行次数
@@ -223,10 +231,9 @@ PageNum Memory::adjust(string algorithm, BlockNum &pos)
 	}
 	else if (algorithm == "LRU")
 	{
-		if (LRU_Queue.empty()) { cout << "hello world!" << endl; return 0; }
-		pos = LRU_Queue.front();	
+		pos = LRU_Queue.front();		//取队列头元素 => 最近最少使用的页面
 		LRU_Queue.pop();
-		LRU_Queue.push(pos);
+		LRU_Queue.push(pos);			//将其压入队尾
 
 		old = block[pos];
 	}
@@ -245,6 +252,10 @@ void Memory::Init()
 	this->restInst = TOTALNUM;
 }
 
+/* 请求调页存储管理方式模拟
+ * @param {置换算法} algorithm
+ * @param {用户选择的执行类型} type
+*/
 void Memory::Simulate(string algorithm, char type)
 {
 	InstNum aim;
