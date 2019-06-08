@@ -20,6 +20,7 @@ typedef int BlockNum;	//块号
 /*返回[low, high]间的随机指令*/
 InstNum getRand(InstNum low, InstNum high)
 {
+	if (high - low == -1) { return high; }
 	return (rand() % (high - low + 1) + low);
 }
 
@@ -69,9 +70,8 @@ public:
 
 int main(void)
 {
-	Memory myMemory;		//创建内存对象
+	
 	char method, type, operate;	//置换算法, 执行模式, 功能
-	srand((unsigned)time(NULL));			//获取随机数种子
 
 	do
 	{
@@ -116,7 +116,9 @@ int main(void)
 		} while (type != 'A' && type != 'a' && type != 'B' && type != 'b');
 
 		//TODO
+		Memory myMemory;		//创建内存对象
 		myMemory.Init();						//初始化内存
+		srand((unsigned)time(NULL));			//获取随机数种子
 		myMemory.Simulate(algorithm, type);		//按照该算法和该执行模式进行模拟
 		
 		cout << algorithm<<"算法, "
@@ -153,7 +155,11 @@ int main(void)
 	} while (operate!='B' && operate!='b');
 
 		
-
+	cout << endl << endl
+		<< "********************************" << endl
+		<< "* 请求调页存储管理方式模拟结束 * " << endl
+		<< "********************************" << endl
+		<< endl;
 	system("pause");
 	return 0;
 }
@@ -217,7 +223,12 @@ PageNum Memory::adjust(string algorithm, BlockNum &pos)
 	}
 	else if (algorithm == "LRU")
 	{
+		if (LRU_Queue.empty()) { cout << "hello world!" << endl; return 0; }
+		pos = LRU_Queue.front();	
+		LRU_Queue.pop();
+		LRU_Queue.push(pos);
 
+		old = block[pos];
 	}
 
 	return old;
@@ -227,6 +238,8 @@ void Memory::Init()
 {
 	this->block.resize(MaxSize, EMPTY);
 	this->visited.resize(TOTALNUM, false);
+	while (!this->LRU_Queue.empty()) { this->LRU_Queue.pop(); }
+
 	this->runTime = 0;
 	this->adjustTime = 0;
 	this->restInst = TOTALNUM;
