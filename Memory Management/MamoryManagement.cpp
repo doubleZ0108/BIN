@@ -3,27 +3,58 @@
 #include <ctime>
 #include <vector>
 #include <string>
+#include <queue>
 #include <algorithm>
+#include <iomanip>
 using namespace std;
 
 #define MaxSize 4		//分配给作业的总内存块数
 #define EMPTY -1		//内存块为空标识
 #define TOTALNUM 320	//指令总条数
-typedef int PageNum;
 
-/*返回[low, high]间的随机整数*/
-PageNum getRand(PageNum low, PageNum high)
+typedef int InstNum;	//指令号
+typedef int PageNum;	//页号
+typedef int BlockNum;	//块号
+
+
+/*返回[low, high]间的随机指令*/
+InstNum getRand(InstNum low, InstNum high)
 {
 	return (rand() % (high - low + 1) + low);
 }
+
 
 class Memory
 {
 private:
 	vector<PageNum> block;	//内存块
+	vector<bool> visited;	//是否执行过该指令
+	queue<BlockNum> LRU_Queue;	//最近最少使用队列
 
-	int runTime = 0, adjustTime = 0;		//运行次数, 调页次数
-	void execute(string algorithm, PageNum now);	//按照算法执行一条指令
+	int runTime = 0, adjustTime = 0;					//运行次数, 调页次数
+	int restInst = TOTALNUM;								//剩余指令
+	void execute(string algorithm, InstNum aim);		//按照算法执行一条指令
+	PageNum adjust(string algorithm, BlockNum &pos);		//页面置换
+	void displayPosMess(InstNum aim) {
+		cout << "物理地址为:" << setw(3)<<aim
+			 << ", 地址空间页号为:" <<setw(2)<< aim / 10
+			<< ", 页内第" << setw(2) << aim % 10 << "条指令.";
+	}
+	void displayLoadMess(PageNum fresh, BlockNum pos, bool flag) { 
+		cout << endl;
+		if (flag) {		//已经在内存块中
+			cout << fresh << "号页已经在内存中第" << pos << "号块中了, 未发生调页." << endl << endl;
+		}
+		else {			//没在内存块中, 但是内存块没满
+			cout << fresh << "号页放在内存中第" << pos << "号块中, 未发生调页." << endl << endl;
+		}
+	}
+	void displayLoadMess(PageNum old, PageNum fresh, BlockNum pos) {
+		cout << "  || 调出内存中第" << setw(2)<<pos 
+			<< "块中第" <<setw(2)<< old 
+			<< "号页, 调入第" << setw(2) << fresh << "号页." << endl << endl;
+	}
+
 public:
 	Memory() = default;
 	~Memory() = default;
@@ -34,14 +65,13 @@ public:
 	int getRunTime() { return this->runTime; }			//返回运行次数
 	int getAdjustTime() { return this->adjustTime; }	//返回调页次数
 	double getAdjustRate(){ return (1.0*this->adjustTime / this->runTime); }	//返回缺页率
-
-
 };
 
 int main(void)
 {
 	Memory myMemory;		//创建内存对象
 	char method, type, operate;	//置换算法, 执行模式, 功能
+	srand((unsigned)time(NULL));			//获取随机数种子
 
 	do
 	{
@@ -87,7 +117,6 @@ int main(void)
 
 		//TODO
 		myMemory.Init();						//初始化内存
-		srand((unsigned)time(NULL));			//获取随机数种子
 		myMemory.Simulate(algorithm, type);		//按照该算法和该执行模式进行模拟
 		
 		cout << algorithm<<"算法, "
@@ -129,21 +158,83 @@ int main(void)
 	return 0;
 }
 
-void Memory::execute(string algorithm, PageNum now)
+void Memory::execute(string algorithm, InstNum aim)
 {
+	this->runTime++;		//更新运行次数
 
+	PageNum page = aim / 10;	//计算页号
+	BlockNum pos = 0;
+
+	displayPosMess(aim);
+
+	/*检测该页是否已经在内存中*/
+	for (pos = 0; pos < MaxSize; ++pos)
+	{
+		if (block[pos] == page)
+		{
+			displayLoadMess(page, pos, true);
+
+			return;
+		}
+	}
+	/*检测内存中有无空闲块*/
+	for (pos = 0; pos < MaxSize; ++pos)
+	{
+		if (block[pos] == EMPTY)
+		{
+			block[pos] = page;
+			displayLoadMess(page, pos, false);
+
+			if (algorithm == string("LRU"))
+			{
+				LRU_Queue.push(pos);		//将其压入最近最少使用队列
+			}
+
+			return;
+		}
+	}
+
+	//执行到这说明: 1.内存块是满的 2.要进行调页
+	PageNum old = adjust(algorithm, pos);
+	block[pos] = page;
+	displayLoadMess(old, page, pos);
+}
+
+/*
+ * @returnValue {要被替换掉的页号}
+ * @param {置换算法} algorithm
+ * @param {调入调出的位置} pos 
+*/
+PageNum Memory::adjust(string algorithm, BlockNum &pos)
+{
+	this->adjustTime++;		//更新调页次数
+
+	PageNum old;
+	if (algorithm == "FIFO")
+	{
+		pos = (this->adjustTime-1) % 4;	//缺页次数为1, 则将0号内存的页调出, 将当前指令调入0 号内存中...以此类推
+		old = block[pos];
+	}
+	else if (algorithm == "LRU")
+	{
+
+	}
+
+	return old;
 }
 
 void Memory::Init()
 {
 	this->block.resize(MaxSize, EMPTY);
+	this->visited.resize(TOTALNUM, false);
+	this->runTime = 0;
+	this->adjustTime = 0;
+	this->restInst = TOTALNUM;
 }
-
-
 
 void Memory::Simulate(string algorithm, char type)
 {
-	int aim;
+	InstNum aim;
 	if (type == 'A' || type == 'a')
 	{
 		int cnt = 0;
@@ -177,6 +268,42 @@ void Memory::Simulate(string algorithm, char type)
 			execute(algorithm, aim); cnt++;
 		}
 	}
+	else if (type == 'B' || type == 'b')
+	{
+		//随机选取一个起始指令
+		aim = getRand(0, TOTALNUM - 1);
+		execute(algorithm, aim); 
+		restInst--; visited[aim] = true;
+		//顺序执行下一条指令
+		aim++;
+		execute(algorithm, aim);
+		restInst--; visited[aim] = true;
 
-	
+		while (true)
+		{
+			if (!restInst) { break; }
+			//跳转到前地址部分
+			aim = getRand(0, aim - 1);
+			execute(algorithm, aim);
+			if (aim!=TOTALNUM && !visited[aim]) { restInst--; visited[aim] = true; }
+
+			if (!restInst) { break; }
+			//顺序执行下一条指令
+			aim++;
+			execute(algorithm, aim); 
+			if (aim != TOTALNUM && !visited[aim]) { restInst--; visited[aim] = true; }
+
+			if (!restInst) { break; }
+			//跳转到后地址部分
+			aim = getRand(aim + 1, TOTALNUM - 1);
+			execute(algorithm, aim);
+			if (aim != TOTALNUM && !visited[aim]) { restInst--; visited[aim] = true; }
+
+			if (!restInst) { break; }
+			//顺序执行下一条指令
+			aim++;
+			execute(algorithm, aim);
+			if (aim != TOTALNUM && !visited[aim]) { restInst--; visited[aim] = true; }
+		}
+	}
 }
