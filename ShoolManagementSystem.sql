@@ -126,3 +126,109 @@ FROM student NATURE join takes
 WHERE year=2019
 group by course_id, semester, year, sec_id
 having count(ID)>2;
+
+
+--[嵌套子查询]--
+--[判断属性或元组是否在集合中 -> in/not in]--
+--1.找出在2009年秋和2010年春同时开课的课程
+SELECT distinct course_id
+FROM section
+WHERE year=2009 and semester='Fall' and course_id in(
+    SELECT course_id
+    FROM section
+    WHERE year=2010 and semester='Spring';
+);
+
+(
+    SELECT distinct course_id
+    FROM section
+    WHERE year=2009 and semester='Fall';
+)
+intersect
+(
+    SELECT distinct course_id
+    FROM section
+    WHERE year=2010 and semester='Spring';
+)
+
+--2.找出选修了ID为10111老师讲的课的学生人数
+SELECT count(distinct(takes.ID))
+FROM takes
+WHERE (course_id,sec_id,semester,year) in (
+    SELECT course_id,sec_id,semester,year
+    FROM teaches
+    WHERE teaches.ID=10111;
+);
+
+SELECT count(distinct(takes.ID))
+FROM takes JOIN teaches USING(course_id,sec_id,semester,year)   --这里不能直接自然连接, takes和teaches都有ID属性, 但是不是一个意思
+WHERE teaches.ID=10111;
+
+SELECT count(distinct(takes.ID))
+FROM takes, teaches
+WHERE (takes.course_id,takes.sec_id,takes.semester,takes.year)=(teaches.course_id,teaches.sec_id,teaches.semester,teaches.year)
+    and teaches.ID=10111
+
+--[集合比较 -> some/all]--
+--1.找出教师工资至少比Biology系中某一个老师工资高
+SELECT ID, name
+FROM instructor
+WHERE salary>some(
+    SELECT salary
+    FROM instructor
+    WHERE dept_name='Biology';
+);
+
+--2.找出工资比所有Biology系老师都高
+--(1)把some改成any
+--(2)用聚集函数
+WHERE salary>(
+    SELECT max(salary)
+    FROM instructor;
+);
+
+--[测试集合的基数,即判断集合是否为空 -> exist]--
+--1.找出在2009年秋和2010年春同时开课的课程(前面的例子)
+SELECT S.course_id
+FROM section as S
+WHERE S.year=2009 and S.semester='Fall' and exist(
+    SELECT *
+    FROM section as T
+    WHERE T.year=2010 and T.semester='Spring'
+            and S.course_id=T.course_id;
+);
+
+--B包含在A中 <=> 所有B中的元组都在A中 <=> not exist (B except A)
+--2.选修了Biology系开设的所有课程的学生
+SELECT S.ID, S.name
+FROM student as S
+WHERE not exist(
+    (
+        SELECT course_id
+        FROM course;
+    )
+    except
+    (
+        SELECT course_id
+        FROM takes
+        WHERE takes.ID=S.ID;
+    )
+);
+
+--[测试一个子查询是否有相同元组 -> unique]--
+--1.在2009年最多开设一次的课程
+SELECT T.course_id
+FROM course as T
+WHERE unique (
+    SELECT R.course_id
+    FROM section as R
+    WHERE T.course_id=R.course_id and R.year=2019;
+);
+
+WHERE 1>=(
+    SELECT count(R.course_id)
+    ...
+)
+
+--2.题干改成至少开设两次
+--改为not unique, 其它不变
