@@ -232,3 +232,54 @@ WHERE 1>=(
 
 --2.题干改成至少开设两次
 --改为not unique, 其它不变
+
+
+--[from子句中的子查询]--
+--1.找系平均工资超过42000的那些系中教师的平均工资
+SELECT dept_name, avg(salary)
+FROM instructor
+group by dept_name
+HAVING avg(salary)>42000;
+
+SELECT dept_name, avg_salary
+FROM (
+    SELECT dept_name, avg(salary) as avg_salary
+    FROM instructor
+    GROUP by dept_name
+)
+WHERE avg_salary>42000;
+
+
+--2.找所有系中工资总额最大的系
+SELECT dept_name, max(total_salary)
+FROM (
+    SELECT dept_name, sum(salary)
+    FROM instructor
+    GROUP BY dept_name
+) as (dept_name, total_salary);
+
+--?这样是等效的么
+SELECT dept_name, sum(salary)
+FROM instructor
+GROUP BY dept_name
+HAVING sum(salary) > (
+    SELECT max(salary)
+    FROM instructor
+    GROUP BY dept_name
+);
+
+
+--[临时关系 -> with]--
+--1.找所有工资总额大于所有系平均工资总额的系
+WITH dept_total(dept_name, value) AS (
+        SELECT dept_name, sum(salary)
+        FROM instructor
+        GROUP BY dept_name
+    ),
+    dept_total_avg(value) AS(
+        SELECT avg(value)
+        FROM dept_total
+    )
+SELECT dept_name
+FROM dept_total, dept_total_avg
+WHERE dept_total.value>=dept_total_avg.value;
