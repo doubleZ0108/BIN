@@ -1,4 +1,4 @@
-create TABLE instructor(
+CREATE TABLE instructor(
     ID CHAR(5),
     name VARCHAR(20) NOT NULL,
     dept_name VARCHAR(20),
@@ -15,7 +15,7 @@ DROP TABLE instructor;
 
 ALTER TABLE instructor add school,bonus;
 
----[基础查询]---
+--[基础查询]--
 --1.找出所有老师的姓名, 系名, 建筑名--
 SELECT name, dept_name, building
 FROM instructor, department
@@ -76,15 +76,15 @@ order by salary desc, name asc;
 
 --[where子句谓词]--
 WHERE salary<=100 and salary >=90
-WHERE salary between 90 and 100
+WHERE salary between 90 and 100;
 
 WHERE instructor.ID=teaches.ID and dept_name='Biology'
-WHERE (instructor.ID, dept_name) = (teaches.ID, 'Biology')
+WHERE (instructor.ID, dept_name) = (teaches.ID, 'Biology');
 
 --[集合运算 -> union/intersect/except]--
 (SELECT WHERE FROM)
 union           --intersect/except
-(SELECT WHERE FROM)
+(SELECT WHERE FROM);
 
 --[聚集函数 -> avg/min/max/sum/count]--
 --1.求course表中有多少元组--
@@ -136,20 +136,20 @@ FROM section
 WHERE year=2009 and semester='Fall' and course_id in(
     SELECT course_id
     FROM section
-    WHERE year=2010 and semester='Spring';
+    WHERE year=2010 and semester='Spring'
 );
 
 (
     SELECT distinct course_id
     FROM section
-    WHERE year=2009 and semester='Fall';
+    WHERE year=2009 and semester='Fall'
 )
 intersect
 (
     SELECT distinct course_id
     FROM section
-    WHERE year=2010 and semester='Spring';
-)
+    WHERE year=2010 and semester='Spring'
+);
 
 --2.找出选修了ID为10111老师讲的课的学生人数
 SELECT count(distinct(takes.ID))
@@ -167,7 +167,7 @@ WHERE teaches.ID=10111;
 SELECT count(distinct(takes.ID))
 FROM takes, teaches
 WHERE (takes.course_id,takes.sec_id,takes.semester,takes.year)=(teaches.course_id,teaches.sec_id,teaches.semester,teaches.year)
-    and teaches.ID=10111
+    and teaches.ID=10111;
 
 --[集合比较 -> some/all]--
 --1.找出教师工资至少比Biology系中某一个老师工资高
@@ -176,7 +176,7 @@ FROM instructor
 WHERE salary>some(
     SELECT salary
     FROM instructor
-    WHERE dept_name='Biology';
+    WHERE dept_name='Biology'
 );
 
 --2.找出工资比所有Biology系老师都高
@@ -184,7 +184,7 @@ WHERE salary>some(
 --(2)用聚集函数
 WHERE salary>(
     SELECT max(salary)
-    FROM instructor;
+    FROM instructor
 );
 
 --[测试集合的基数,即判断集合是否为空 -> exist]--
@@ -195,7 +195,7 @@ WHERE S.year=2009 and S.semester='Fall' and exist(
     SELECT *
     FROM section as T
     WHERE T.year=2010 and T.semester='Spring'
-            and S.course_id=T.course_id;
+            and S.course_id=T.course_id
 );
 
 --B包含在A中 <=> 所有B中的元组都在A中 <=> not exist (B except A)
@@ -205,13 +205,13 @@ FROM student as S
 WHERE not exist(
     (
         SELECT course_id
-        FROM course;
+        FROM course
     )
     except
     (
         SELECT course_id
         FROM takes
-        WHERE takes.ID=S.ID;
+        WHERE takes.ID=S.ID
     )
 );
 
@@ -222,13 +222,13 @@ FROM course as T
 WHERE unique (
     SELECT R.course_id
     FROM section as R
-    WHERE T.course_id=R.course_id and R.year=2019;
+    WHERE T.course_id=R.course_id and R.year=2019
 );
 
 WHERE 1>=(
     SELECT count(R.course_id)
     ...
-)
+);
 
 --2.题干改成至少开设两次
 --改为not unique, 其它不变
@@ -285,10 +285,6 @@ FROM dept_total, dept_total_avg
 WHERE dept_total.value>=dept_total_avg.value;
 
 
-
-
-
-
 --[删除]--
 --1.删除在Waston大楼的老师
 DELETE FROM instructor
@@ -343,3 +339,29 @@ SET tot_cred = (
     FROM takes NATURE JOIN course
     WHERE S.ID=takes.ID and takes.grade is not null and takes.grade<>'F'
 );
+
+
+--[视图 -> view]--
+--1.创建系总工资视图
+CREATE dept_total_salary(dept_name, total_salary) AS
+(
+    SELECT dept_name, sum(salary)
+    FROM instructor
+    GROUP BY dept_name
+);
+
+--[函数]--
+--1.定义一个函数, 输入一个系名, 输出该系有多少老师
+CREATE FUNCTION dept_count(dept_name VARCHAR(20))
+RETURNS INTEGER
+BEGIN
+    DECLARE d_count INTEGER; 
+    SELECT count(*) INTO d_count
+    FROM instructor
+    WHERE instructor.dept_name = dept_name
+    return d_count; 
+END
+--使用该函数找到所有老师数大于12的系名和预算
+SELECT dept_name, budget
+FROM department
+WHERE dept_count(dept_name)>12;
