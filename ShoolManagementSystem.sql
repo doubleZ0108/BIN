@@ -283,3 +283,63 @@ WITH dept_total(dept_name, value) AS (
 SELECT dept_name
 FROM dept_total, dept_total_avg
 WHERE dept_total.value>=dept_total_avg.value;
+
+
+
+
+
+
+--[删除]--
+--1.删除在Waston大楼的老师
+DELETE FROM instructor
+WHERE dept_name in (
+    SELECT dept_name
+    FROM department
+    WHERE building='Waston'
+);
+
+--2.删除工资低于平均工资的老师
+WITH avg_salary(value) as(
+    SELECT avg(salary)
+    FROM instructor
+)
+DELETE FROM instructor
+WHERE salary<avg_salary.value;
+--错误做法, 一边删除一边avg(salary)就变了
+DELETE FROM instructor
+WHERE salary<(
+    SELECT avg(salary)
+    FROM instructor
+);
+
+--[插入]--
+--1.将所有老师的信息查到学生里, 并将tot_cred设为0
+INSERT INTO student
+    SELECT ID, name, dept_name, 0
+    FROM instructor;
+--这里不能写 SELECT * => 会导致无线插入
+
+--[更新]--
+--1.工资超过10000元的涨工资3%, 其余涨5%
+--更新的先后顺序很重要
+UPDATE instructor
+SET salary=salary*1.03
+WHERE salary>10000;
+UPDATE instructor
+SET salary=salary*1.05
+WHERE salary<=10000;
+
+UPDATE instructor
+SET salary=
+        CASE
+            WHEN salary<=10000 then salary*1.05
+            ELSE salary*1.03
+        END;
+
+--2.把每个学生的tot_cred设置为该学生成功完成(不是F也不是空)的课程学分总和
+UPDATE student S
+SET tot_cred = (
+    SELECT sum(credits)
+    FROM takes NATURE JOIN course
+    WHERE S.ID=takes.ID and takes.grade is not null and takes.grade<>'F'
+);
