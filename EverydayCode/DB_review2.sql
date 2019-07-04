@@ -237,3 +237,37 @@ where dept_name in (
   from department
   where building='Waston'
 );
+with avg_salary(value) as (
+  select avg(salary)
+  from instructor
+)
+delete from instructor
+where salary<avg_salary.value;
+             
+--插入
+insert into student
+  select ID, name, dept_name, 0
+  from instructor;
+             
+--更新
+update instructor
+set salary=salary*1.03
+where salary>10000;
+update instructor
+set salary=salary*1.05
+where salary<=10000;
+             
+--设置学生学分
+update student S
+set tot_cred = (
+  select sum(credits)
+  from course natural join takes
+  where S.ID=takes.ID and grade is not null and grade,.'F'
+);
+             
+--视图
+create view total_salary(dept_name, total_salary) as (
+  select dept_name, sum(salary)
+  from instructor
+  group by dept_name
+);
