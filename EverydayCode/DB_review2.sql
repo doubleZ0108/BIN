@@ -271,3 +271,12 @@ create view total_salary(dept_name, total_salary) as (
   from instructor
   group by dept_name
 );
+
+--触发器
+create trigger this_check after update on section
+referencing new row as nrow
+referencing old row as orow
+for each row
+begin atomic
+  --sql语句
+end;
