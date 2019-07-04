@@ -211,3 +211,29 @@ with dept_total(dept_name, value) as(
 select dept_name
 from dept_total, dept_total_avg
 where dept_total.value>dept_total_avg.value;
+
+--教师数大于12的系名和预算            
+select dept_name, budget
+from department d
+where 12<(
+  select count(ID)
+  from instructor
+  where dept_name=d.dept_name
+);
+
+with instructor_count(dept_name, num) as (
+  select dept_name, count(ID)
+  from instructor
+  group by dept_name
+)
+select dept_name, budget
+from instructor_count natural join department
+where instructor_count.num>12;
+             
+--删除
+delete from instructor
+where dept_name in (
+  select dept_name
+  from department
+  where building='Waston'
+);
