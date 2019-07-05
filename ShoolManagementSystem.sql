@@ -365,13 +365,3 @@ END
 SELECT dept_name, budget
 FROM department
 WHERE dept_count(dept_name)>12;
-
-
---[触发器 -> trigger]--
-create trigger this_check after update on section
-referencing new row as nrow
-referencing old row as orow
-for each row
-begin atomic
-  --sql语句
-end;
