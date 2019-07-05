@@ -1,0 +1,13 @@
+
+@{
+    ViewBag.Title = "Home";
+}
+
+@using (Html.BeginForm("home", "HelloWorld", FormMethod.Post))
+{
+    <div>@ViewData["para1"]</div>
+    <div>@ViewData["para2"]</div>
+
+    <input type="submit" value="btn1" name="action" />
+    <input type="submit" value="btn2" name="action" />
+}
