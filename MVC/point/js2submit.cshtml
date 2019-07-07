@@ -1,0 +1,13 @@
+<form id="btnForm" action="/Main/Button" method="post">
+    <div>@ViewData["div1"]</div>
+    <div>@ViewData["div2"]</div>
+
+    <input type="button" value="btn1" name="action" onclick="btn1Click();" />
+
+    <script>
+        function btn1Click() {
+            console.log("clickbtn1..........");
+            $("#btnForm").submit();
+        }
+    </script>
+</form>
