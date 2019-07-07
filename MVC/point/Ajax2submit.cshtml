@@ -5,3 +5,27 @@
 
     <input type="submit" value="btn1" name="action" />
 }
+
+
+
+<form id="testContainer">
+        @using (Ajax.BeginForm("Button", "Main", new AjaxOptions
+        {
+            HttpMethod = "Post",
+            UpdateTargetId = "testContainer",
+            InsertionMode = InsertionMode.Replace,
+      
+        }))
+        {
+            <input type="" value="按钮" onclick="btnClick();" />
+            <script>
+                function btnClick() {
+                    console.log("click...");
+
+                    $("#testController").submit();
+                }
+            </script>
+
+        }
+        <div>@ViewData["div1"]</div>
+    </form>
