@@ -1,0 +1,7 @@
+<div id="div1">@ViewData["div1"]</div>
+
+@using (Ajax.BeginForm("Button", "Main", null, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "div1" }))
+{
+
+    <input type="submit" value="btn1" name="action" />
+}
