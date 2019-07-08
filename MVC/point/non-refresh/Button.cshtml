@@ -1,0 +1,52 @@
+
+@{
+    ViewBag.Title = "Button";
+}
+
+
+<div id="colorContainer">
+    <div id="graph" style="background-color: red;">graph</div>
+    <input type="button" onclick="colorChange();" value="click me to change color" />
+    <script>
+        function colorChange() {
+            $("#graph").css("background-color", "yellow");
+        }
+    </script>
+</div>
+
+<input type="button" onclick="btnClick()" value="按钮" />
+
+<div id="div1">001</div>
+<div id="div2">double Z</div>
+
+<script type="text/javascript">
+    function btnClick() {
+        var queryJson = [];
+        var row = {};
+        row.id = "1";
+        row.name = "double Z";
+        queryJson.push(row);
+        console.log(queryJson[0]);
+
+        $.ajax({
+            url: "/Main/Button",
+            async: false,
+            type: 'post',
+            contentType: "application/json",
+            data: JSON.stringify(queryJson[0]),
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                console.log(data);
+                var data = eval("(" + data + ")");
+
+                //alert("数据查询成功！");
+                document.getElementById("div1").innerHTML = data.id;
+                document.getElementById("div2").innerHTML = data.name;
+            },
+            error: function (message) {
+                alert("请求查询数据失败！");
+            }
+        });
+    }
+</script>
