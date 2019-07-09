@@ -1,0 +1,35 @@
+  <script>
+        function SaveClick() {
+
+            let birthday = $("#birthday").val();
+            let name = "double Z";
+            var queryJson = [];
+            var row = {};
+            row.birthday = birthday;
+            row.name = name;
+            queryJson.push(row);
+
+            $.ajax({
+                url: "/User/Index",
+                async: false,
+                type: 'post',
+                contentType: "application/json",
+                data: JSON.stringify(queryJson[0]),
+                dataType: "json",
+                traditional: true,
+                success: function (data) {
+                    console.log(data);
+                    var data = eval("(" + data + ")");
+                    console.log(data.flag);
+                    //TODO
+                    //$("#saveForm").submit();
+
+                },
+                error: function (message) {
+                    alert("请求查询数据失败！");
+                }
+            });
+
+
+        }
+    </script>
