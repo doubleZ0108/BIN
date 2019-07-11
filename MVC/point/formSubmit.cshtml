@@ -1,0 +1,21 @@
+ [HttpPost]
+        [Route("PostFile")]
+        public ActionResult Setting(FormCollection formdata)
+        {
+            var form = formdata;
+            HttpPostedFileBase avatar = Request.Files["avatar_upload"];
+            var phone = Request.Form["phone_upload"];
+            var email= Request.Form["email_upload"];
+            var sign = Request.Form["sign_upload"];
+            var gender = Request.Form["gender_upload"];
+            var birthday = Request.Form["birthday_upload"];
+            var qq = Request.Form["qq_upload"];
+            var wechat = Request.Form["wechat_upload"];
+            //var location_form = Request.Form["location_form_upload"];
+            var location = Request.Form["location_upload"];
+
+
+            JsonData data = new JsonData();
+            data["flag"] = "1";
+            return Json(data.ToJson());
+        }
