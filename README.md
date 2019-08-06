@@ -72,6 +72,7 @@ this.setData({my : 'doubleZ'})
 ### 目录结构(不是md语法)
 cmd切换到要生成目录结构的目录
 ` tree /f > list.txt `
+mac中 `tree -N > list.txt`   -N防止中文乱码
 > 切换盘符直接 ` E: `
 >
 > 在该盘下切换要 ` cd document\myfile `
